@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  macOS LaunchAgent — runs the pipeline every Sunday at 06:00.
+
+  Install:
+    cp com.stock-timeseries.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/com.stock-timeseries.plist
+
+  Uninstall:
+    launchctl unload ~/Library/LaunchAgents/com.stock-timeseries.plist
+
+  Run manually now:
+    launchctl start com.stock-timeseries
+
+  Logs:
+    ~/Library/Logs/stock-timeseries.log
+    ~/Library/Logs/stock-timeseries-error.log
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.stock-timeseries</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <!-- Absolute path to the venv Python -->
+    <string>/Users/ntphong8/Public/paul-private/stock-time-series/.venv/bin/python</string>
+    <string>/Users/ntphong8/Public/paul-private/stock-time-series/scripts/run_pipeline.py</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/ntphong8/Public/paul-private/stock-time-series</string>
+
+  <!-- Run every Sunday at 06:00 AM -->
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Weekday</key>
+    <integer>0</integer>
+    <key>Hour</key>
+    <integer>6</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>/Users/ntphong8/Library/Logs/stock-timeseries.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/ntphong8/Library/Logs/stock-timeseries-error.log</string>
+
+  <!-- Retry if machine was asleep when trigger fired -->
+  <key>RunAtLoad</key>
+  <false/>
+</dict>
+</plist>
