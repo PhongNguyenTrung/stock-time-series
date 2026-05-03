@@ -26,15 +26,32 @@ The pipeline output feeds directly into six forecasting models built by other me
 
 ## Pipeline
 
-```
-  Raw Data           Preprocessed          Split Datasets
-┌──────────┐       ┌──────────────┐       ┌──────────────────┐
-│  vnstock │──────▶│    Clean     │──────▶│  Train (70/80%)  │
-│ yfinance │       │  + Features  │       │  Test  (30/20%)  │
-└──────────┘       └──────────────┘       └──────────────────┘
-                         │                         │
-                    MA · RSI · MACD           Google Drive
-                    Bollinger Bands            (rclone)
+```mermaid
+flowchart LR
+    subgraph Sources["Data Sources"]
+        A1[vnstock]
+        A2[yfinance]
+    end
+
+    subgraph Preprocess["Preprocess"]
+        B1[Clean\nMissing Values]
+        B2[Feature Engineering\nMA · RSI · MACD\nBollinger Bands]
+    end
+
+    subgraph Split["Split"]
+        C1[Train 70%\nTest  30%]
+        C2[Train 80%\nTest  20%]
+    end
+
+    D[(Google Drive\nrclone)]
+
+    A1 --> B1
+    A2 --> B1
+    B1 --> B2
+    B2 --> C1
+    B2 --> C2
+    C1 --> D
+    C2 --> D
 ```
 
 **4 steps, 1 command:**
