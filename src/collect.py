@@ -22,16 +22,6 @@ END_DATE: str = os.getenv("END_DATE", datetime.today().strftime("%Y-%m-%d"))
 RAW_DIR = Path("data/raw")
 FRESHNESS_HOURS = 24
 
-COLUMN_MAP = {
-    "time": "date",
-    "open": "open",
-    "high": "high",
-    "low": "low",
-    "close": "close",
-    "volume": "volume",
-}
-
-
 def _is_fresh(path: Path) -> bool:
     if not path.exists():
         return False
@@ -68,7 +58,8 @@ def _fetch_yfinance(ticker: str) -> pd.DataFrame | None:
         # yfinance may return MultiIndex columns
         raw.columns = [c[0] if isinstance(c, tuple) else c for c in raw.columns]
         raw.columns = [c.lower() for c in raw.columns]
-        raw = raw.rename(columns={"adj close": "close", "date": "date"})
+        # yfinance returns "close" (unadjusted) after lowercasing — no rename needed
+        raw = raw.rename(columns={"date": "date"})
         raw["date"] = pd.to_datetime(raw["date"])
         return raw[["date", "open", "high", "low", "close", "volume"]]
     except Exception as exc:

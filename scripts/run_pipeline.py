@@ -29,15 +29,14 @@ logging.basicConfig(
 log = logging.getLogger("pipeline")
 
 
-def _step(name: str, fn, **kwargs) -> float:
+def _step(name: str, fn, **kwargs):
     log.info("=" * 50)
     log.info("STEP: %s", name)
     log.info("=" * 50)
     t0 = time.time()
-    fn(**kwargs)
-    elapsed = time.time() - t0
-    log.info("DONE: %s (%.1fs)", name, elapsed)
-    return elapsed
+    result = fn(**kwargs)
+    log.info("DONE: %s (%.1fs)", name, time.time() - t0)
+    return result
 
 
 def main() -> None:
@@ -50,18 +49,32 @@ def main() -> None:
     log.info("Pipeline started")
 
     try:
-        _step("1/4  collect",    collect_all,    force=args.force)
-        _step("2/4  preprocess", preprocess_all)
+        collected   = _step("1/4  collect",    collect_all,    force=args.force)
+        preprocessed = _step("2/4  preprocess", preprocess_all)
         _step("3/4  split",      split_all)
 
         if args.skip_upload:
             log.info("STEP: 4/4  upload — SKIPPED (--skip-upload)")
         else:
-            _step("4/4  upload", upload)
+            ok = upload()
+            if not ok:
+                log.error("Upload failed — data may not be available to teammates")
+                sys.exit(1)
 
     except Exception as exc:
         log.exception("Pipeline failed: %s", exc)
         sys.exit(1)
+
+    # Warn if any tickers failed during collect / preprocess
+    failed_collect = [t for t in ["VCB", "FPT", "HPG", "VIC", "VNM"]
+                      if t not in (collected or {})]
+    if failed_collect:
+        log.warning("Tickers not collected: %s", failed_collect)
+
+    failed_pre = [t for t in ["VCB", "FPT", "HPG", "VIC", "VNM"]
+                  if t not in (preprocessed or {})]
+    if failed_pre:
+        log.warning("Tickers not preprocessed: %s", failed_pre)
 
     log.info("Pipeline complete in %.1fs", time.time() - t_total)
 

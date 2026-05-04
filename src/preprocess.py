@@ -23,7 +23,8 @@ TICKERS: list[str] = os.getenv("TICKERS", "VCB,FPT,HPG,VIC,VNM").split(",")
 RAW_DIR = Path("data/raw")
 FEATURED_DIR = Path("data/processed/featured")
 
-# Warm-up rows to discard so all indicators are fully populated
+# Warm-up rows to discard so all indicators are fully populated.
+# 50 = window of MA-50, the largest window used — rows before this have NaN indicators.
 WARMUP_ROWS = 50
 
 
@@ -33,7 +34,8 @@ def _clean(df: pd.DataFrame) -> pd.DataFrame:
     df = df.sort_values("date").drop_duplicates("date").reset_index(drop=True)
     # Drop rows where close is missing — these are structural gaps, not fill-able
     df = df.dropna(subset=["close"])
-    # Forward-fill minor gaps (≤3 consecutive trading days) for other OHLCV columns
+    # Forward-fill minor gaps for other OHLCV columns.
+    # limit=3: covers at most a long weekend (Fri–Mon = 3 calendar days gap).
     df[["open", "high", "low", "volume"]] = (
         df[["open", "high", "low", "volume"]].ffill(limit=3)
     )

@@ -1,0 +1,11 @@
+﻿MAPE (%),R²,Model,MAE,Ticker,Split,RMSE,Rank_RMSE,Rank_MAE
+1.24,0.9949,Linear Regression,1.14,FPT,70_30,1.63,1,1
+1.241,0.9865,Linear Regression,0.28,HPG,70_30,0.4,1,1
+0.993,0.9505,Linear Regression,0.59,VCB,70_30,0.89,1,1
+1.665,0.9971,Linear Regression,1.14,VIC,70_30,2.5,1,1
+1.01,0.9477,Linear Regression,0.61,VNM,70_30,0.9,1,1
+1.411,0.9796,Linear Regression,1.42,FPT,80_20,1.91,1,1
+1.184,0.9737,Linear Regression,0.29,HPG,80_20,0.42,1,1
+1.0,0.9171,Linear Regression,0.62,VCB,80_20,0.95,1,1
+1.849,0.9967,Linear Regression,1.54,VIC,80_20,3.02,1,1
+1.085,0.9434,Linear Regression,0.65,VNM,80_20,0.98,1,1

@@ -56,7 +56,7 @@ def upload() -> bool:
         return False
 
     log.info("Upload complete → %s", destination)
-    log.info("Share this Drive folder with teammates: %s/%s", REMOTE, GDRIVE_FOLDER)
+    log.info("Share this Drive folder with teammates: %s:%s", REMOTE, GDRIVE_FOLDER)
     return True
 
 

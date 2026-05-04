@@ -1,0 +1,11 @@
+﻿Ticker,Split,Model,RMSE,MAE,R²
+FPT,70_30,Linear Regression,1.63,1.14,0.9949
+HPG,70_30,Linear Regression,0.4,0.28,0.9865
+VCB,70_30,Linear Regression,0.89,0.59,0.9505
+VIC,70_30,Linear Regression,2.5,1.14,0.9971
+VNM,70_30,Linear Regression,0.9,0.61,0.9477
+FPT,80_20,Linear Regression,1.91,1.42,0.9796
+HPG,80_20,Linear Regression,0.42,0.29,0.9737
+VCB,80_20,Linear Regression,0.95,0.62,0.9171
+VIC,80_20,Linear Regression,3.02,1.54,0.9967
+VNM,80_20,Linear Regression,0.98,0.65,0.9434
