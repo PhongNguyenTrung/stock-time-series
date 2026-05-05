@@ -142,16 +142,18 @@ def upload_to_sheets(spreadsheet_id: str | None = None) -> bool:
         rows = []
         for entry in raw:
             for label, s in entry["splits"].items():
-                rows.append({
-                    "ticker": entry["ticker"],
-                    "split": label,
-                    "total_rows": entry["total_rows"],
-                    "train_rows": s["train_rows"],
-                    "test_rows": s["test_rows"],
-                    "train_end": s["train_end"],
-                    "test_start": s["test_start"],
-                    "test_end": s["test_end"],
-                })
+                rows.append(
+                    {
+                        "ticker": entry["ticker"],
+                        "split": label,
+                        "total_rows": entry["total_rows"],
+                        "train_rows": s["train_rows"],
+                        "test_rows": s["test_rows"],
+                        "train_end": s["train_end"],
+                        "test_start": s["test_start"],
+                        "test_end": s["test_end"],
+                    }
+                )
         df_info = pd.DataFrame(rows)
         ws_info = _upsert_sheet(spreadsheet, "split_info")
         data = [df_info.columns.tolist()] + df_info.values.tolist()

@@ -43,7 +43,9 @@ def _step(name: str, fn, **kwargs):
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Stock time series data pipeline")
-    parser.add_argument("--skip-upload", action="store_true", help="Skip Google Drive rclone upload")
+    parser.add_argument(
+        "--skip-upload", action="store_true", help="Skip Google Drive rclone upload"
+    )
     parser.add_argument("--skip-sheets", action="store_true", help="Skip Google Sheets upload")
     parser.add_argument("--force", action="store_true", help="Force re-download of raw data")
     args = parser.parse_args()
@@ -70,6 +72,7 @@ def main() -> None:
             log.info("STEP: 4b/5  Sheets upload — SKIPPED (%s)", reason)
         else:
             from src.sheets import upload_to_sheets
+
             ok = _step("4b/5  sheets", upload_to_sheets)
             if not ok:
                 log.warning("Sheets upload failed — teammates may not see latest data")
