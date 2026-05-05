@@ -1,6 +1,8 @@
 name: Data Refresh
 
-# Chạy thủ công hoặc tự động mỗi thứ 2 lúc 8:00 SA (UTC+7 = 01:00 UTC)
+# Lịch thị trường HOSE/HNX: Thứ 2–6, 09:00–15:00 (UTC+7 = 02:00–08:00 UTC)
+# Data sẵn sàng ~15:30 CH giờ VN = ~08:30 UTC
+# Cron chạy lúc 09:00 UTC = 16:00 CH giờ VN — sau khi data chắc chắn có
 on:
   workflow_dispatch:
     inputs:
@@ -11,7 +13,7 @@ on:
         type: boolean
 
   schedule:
-    - cron: "0 1 * * 1"   # Thứ 2, 01:00 UTC
+    - cron: "0 9 * * 1-5"   # Thứ 2–6, 09:00 UTC = 16:00 CH giờ VN (sau đóng cửa)
 
 jobs:
   refresh:
@@ -31,7 +33,7 @@ jobs:
 
       # vnstock (VCI) thường bị block ngoài IP Việt Nam.
       # Pipeline tự động fallback sang yfinance (.VN suffix).
-      - name: Run pipeline (skip upload)
+      - name: Run pipeline (collect → preprocess → split)
         run: |
           FORCE_FLAG=""
           if [ "${{ github.event.inputs.force }}" = "true" ]; then
@@ -39,8 +41,26 @@ jobs:
           fi
           python scripts/run_pipeline.py --skip-upload $FORCE_FLAG
 
-      # Optional: upload lên Google Drive nếu RCLONE_CONFIG được cấu hình.
-      # Setup: Settings → Secrets → RCLONE_CONFIG = base64(~/.config/rclone/rclone.conf)
+      # ── Google Sheets upload ──────────────────────────────────────────────
+      # Kích hoạt khi secret GOOGLE_SERVICE_ACCOUNT_JSON được cấu hình.
+      # Setup:
+      #   1. Tạo service account trong Google Cloud Console
+      #   2. Enable Sheets API + Drive API
+      #   3. Tải JSON key, paste nội dung vào:
+      #      Settings → Secrets → Actions → GOOGLE_SERVICE_ACCOUNT_JSON
+      #   4. Tạo Google Sheet, share với email của service account
+      #   5. Lấy Spreadsheet ID từ URL, thêm vào:
+      #      Settings → Secrets → Actions → SHEETS_SPREADSHEET_ID
+      - name: Upload to Google Sheets
+        if: ${{ env.GOOGLE_SERVICE_ACCOUNT_JSON != '' }}
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          SHEETS_SPREADSHEET_ID: ${{ secrets.SHEETS_SPREADSHEET_ID }}
+        run: python -c "from src.sheets import upload_to_sheets; upload_to_sheets()"
+
+      # ── Google Drive upload (rclone) ──────────────────────────────────────
+      # Kích hoạt khi secret RCLONE_CONFIG được cấu hình.
+      # Setup: base64 encode rclone.conf → lưu vào secret RCLONE_CONFIG
       - name: Upload to Google Drive
         if: ${{ env.RCLONE_CONFIG != '' }}
         env:
@@ -49,7 +69,6 @@ jobs:
           sudo apt-get install -y rclone
           mkdir -p ~/.config/rclone
           echo "$RCLONE_CONFIG" | base64 -d > ~/.config/rclone/rclone.conf
-          python scripts/run_pipeline.py --skip-upload  # data đã có, chỉ chạy upload
           python -c "from src.upload import upload; upload()"
 
       - name: Report results
