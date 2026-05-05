@@ -2,13 +2,13 @@
 
 <p align="center">
   <b>Vietnamese stock market data pipeline for time series forecasting research</b><br/>
-  <i>Collect · Preprocess · Engineer Features · Split · Upload</i>
+  <i>Collect · Preprocess · Engineer Features · Split · Share</i>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white"/>
   <img src="https://img.shields.io/badge/Data-vnstock%20%7C%20yfinance-orange?style=flat-square"/>
-  <img src="https://img.shields.io/badge/Upload-Google%20Drive-4285F4?style=flat-square&logo=googledrive&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Production-Google%20Sheets-34A853?style=flat-square&logo=googlesheets&logoColor=white"/>
   <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square"/>
 </p>
 
@@ -16,11 +16,93 @@
 
 ## Overview
 
-This repository is **Member 1's contribution** to a group research project on Vietnamese stock price forecasting. It delivers a clean, reproducible data pipeline that the entire team relies on as shared input.
+Member 1's data pipeline for a group project on Vietnamese stock price forecasting.
+Delivers clean, reproducible datasets that feed into six forecasting models built by other team members: ARIMA, SVR, LSTM, GRU, Prophet, and XGBoost/Transformer.
 
 **Tickers:** `VCB` · `FPT` · `HPG` · `VIC` · `VNM` &nbsp;|&nbsp; **Period:** 2016 – 2026
 
-The pipeline output feeds directly into six forecasting models built by other members: ARIMA, SVR, LSTM, GRU, Prophet, and XGBoost/Transformer.
+---
+
+## Environments
+
+### Production — GitHub Actions (automated)
+
+Runs automatically every weekday (Mon–Fri) at **4:00 PM Vietnam time** (after HOSE/HNX market close).
+Results are pushed to **Google Sheets** — teammates open the link to get the latest data.
+
+```
+GitHub Actions (cron Mon–Fri 16:00 ICT)
+    ↓  collect via yfinance (.VN)
+    ↓  preprocess + feature engineering
+    ↓  train/test split (70/30 and 80/20)
+    ↓  upload → Google Sheets ✓
+```
+
+> **Google Sheets link:** *(add link here after setup)*
+
+---
+
+### Development — Run locally
+
+Clone the repo and run the pipeline on your machine to generate CSV files under `data/processed/splits/`.
+
+#### 1. Clone & set up the environment
+
+```bash
+git clone https://github.com/PhongNguyenTrung/stock-time-series.git
+cd stock-time-series
+
+python3 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+#### 2. Configure `.env`
+
+```bash
+cp .env.example .env
+```
+
+The defaults in `.env.example` are sufficient to run — no changes needed.
+
+#### 3. Run the pipeline
+
+```bash
+# Standard local run (skips cloud uploads)
+python scripts/run_pipeline.py --skip-upload --skip-sheets
+
+# Force re-download of raw data
+python scripts/run_pipeline.py --skip-upload --skip-sheets --force
+```
+
+The pipeline produces:
+
+```
+data/
+├── raw/                          # Raw OHLCV             [git-ignored]
+└── processed/
+    ├── featured/                 # + indicators           [git-ignored]
+    └── splits/
+        ├── 70_30/
+        │   ├── VCB_train.csv
+        │   ├── VCB_test.csv
+        │   └── ...               # 5 tickers × 2 files = 10 files
+        ├── 80_20/
+        │   └── ...               # 10 files
+        └── split_info.json       # cut dates per ticker
+```
+
+#### 4. Load data in a notebook
+
+```python
+import pandas as pd
+from pathlib import Path
+
+SPLITS_DIR = Path("data/processed/splits")
+
+train = pd.read_csv(SPLITS_DIR / "70_30/VCB_train.csv", parse_dates=["date"])
+test  = pd.read_csv(SPLITS_DIR / "70_30/VCB_test.csv",  parse_dates=["date"])
+```
 
 ---
 
@@ -30,117 +112,61 @@ The pipeline output feeds directly into six forecasting models built by other me
 flowchart LR
     subgraph Sources["Data Sources"]
         A1[vnstock]
-        A2[yfinance]
+        A2[yfinance .VN]
     end
 
     subgraph Preprocess["Preprocess"]
         B1[Clean\nMissing Values]
-        B2[Feature Engineering\nMA · RSI · MACD\nBollinger Bands]
+        B2[MA · RSI\nMACD · BB]
     end
 
     subgraph Split["Split"]
-        C1[Train 70%\nTest  30%]
-        C2[Train 80%\nTest  20%]
+        C1[70 / 30]
+        C2[80 / 20]
     end
 
-    D[(Google Drive\nrclone)]
+    subgraph Output["Output"]
+        D1[Google Sheets\nProduction]
+        D2[Local CSV\nDevelopment]
+    end
 
-    A1 --> B1
-    A2 --> B1
+    A1 -->|primary| B1
+    A2 -->|fallback| B1
     B1 --> B2
-    B2 --> C1
-    B2 --> C2
-    C1 --> D
-    C2 --> D
+    B2 --> C1 & C2
+    C1 & C2 --> D1
+    C1 & C2 --> D2
 ```
 
-**4 steps, 1 command:**
-
-| Step | Module | Description |
-|------|--------|-------------|
-| 1 · Collect | `src/collect.py` | Download OHLCV data for all tickers |
-| 2 · Preprocess | `src/preprocess.py` | Handle missing values, compute technical indicators |
-| 3 · Split | `src/split.py` | Time-based train/test split (70/30 and 80/20) |
-| 4 · Upload | `src/upload.py` | Sync processed data to Google Drive via rclone |
+| Step | Module | Output |
+|------|--------|--------|
+| 1 · Collect | `src/collect.py` | `data/raw/<TICKER>.csv` |
+| 2 · Preprocess | `src/preprocess.py` | `data/processed/featured/<TICKER>_featured.csv` |
+| 3 · Split | `src/split.py` | `data/processed/splits/{70_30,80_20}/<TICKER>_{train,test}.csv` |
+| 4 · Upload | `src/sheets.py` | Google Sheets (production only) |
 
 ---
 
-## Quickstart
+## Dataset Schema
 
-```bash
-# 1. Clone
-git clone https://github.com/PhongNguyenTrung/stock-time-series.git
-cd stock-time-series
+Columns in each `*_train.csv` / `*_test.csv` file:
 
-# 2. Install
-python -m venv .venv && source .venv/bin/activate
-pip install -e .
+| Column | Type | Description |
+|--------|------|-------------|
+| `date` | date | Trading date |
+| `open` `high` `low` `close` | float | OHLC price (VND thousands) |
+| `volume` | int | Matched trading volume |
+| `ma_5` `ma_20` `ma_50` | float | Simple Moving Average |
+| `rsi_14` | float | RSI (0–100) |
+| `macd` `macd_signal` `macd_hist` | float | MACD (12, 26, 9) |
+| `bb_upper` `bb_middle` `bb_lower` | float | Bollinger Bands (20, 2σ) |
 
-# 3. Configure
-cp .env.example .env   # edit tickers, date range, rclone remote
+**Split boundaries** (identical across all tickers):
 
-# 4. Run
-python scripts/run_pipeline.py
-```
-
-### Options
-
-```bash
-python scripts/run_pipeline.py --skip-upload   # offline / dry-run
-python scripts/run_pipeline.py --force         # force re-download
-```
-
----
-
-## Configuration
-
-Copy `.env.example` to `.env` and edit:
-
-```env
-TICKERS=VCB,FPT,HPG,VIC,VNM
-START_DATE=2016-01-01
-END_DATE=2026-05-03
-
-# rclone remote (run: rclone config → name it "gdrive")
-RCLONE_REMOTE=gdrive
-GDRIVE_FOLDER=stock-time-series/data
-```
-
----
-
-## Project Structure
-
-```
-stock-time-series/
-├── src/
-│   ├── collect.py          # Download raw OHLCV via vnstock / yfinance
-│   ├── preprocess.py       # Clean + feature engineering
-│   ├── split.py            # Train/test split
-│   └── upload.py           # rclone → Google Drive
-├── scripts/
-│   └── run_pipeline.py     # Entry point
-├── data/
-│   ├── raw/                # *.csv per ticker          [git-ignored]
-│   └── processed/
-│       ├── featured/       # *_featured.csv            [git-ignored]
-│       └── splits/
-│           ├── 70_30/      # *_train.csv / *_test.csv  [git-ignored]
-│           └── 80_20/      # *_train.csv / *_test.csv  [git-ignored]
-├── .env.example
-├── pyproject.toml
-└── requirements.txt
-```
-
----
-
-## Output
-
-| File | Content |
-|------|---------|
-| `data/raw/<TICKER>.csv` | Raw OHLCV (Date, Open, High, Low, Close, Volume) |
-| `data/processed/featured/<TICKER>_featured.csv` | + MA, RSI, MACD, Bollinger Bands |
-| `data/processed/splits/70_30/<TICKER>_{train\|test}.csv` | 70% / 30% time split |
-| `data/processed/splits/80_20/<TICKER>_{train\|test}.csv` | 80% / 20% time split |
+| Split | Train end | Test start | Train rows | Test rows |
+|-------|-----------|------------|------------|-----------|
+| 70/30 | 2023-02-21 | 2023-02-22 | ~1 854 | ~796 |
+| 80/20 | 2024-03-14 | 2024-03-15 | ~2 120 | ~530 |
 
 ---
 
@@ -149,10 +175,10 @@ stock-time-series/
 | Library | Purpose |
 |---------|---------|
 | [vnstock](https://github.com/thinh-vu/vnstock) | Vietnamese stock data |
-| [yfinance](https://github.com/ranaroussi/yfinance) | Fallback / global data |
+| [yfinance](https://github.com/ranaroussi/yfinance) | Fallback data source |
 | [pandas](https://pandas.pydata.org/) | Data manipulation |
 | [ta](https://github.com/bukosabino/ta) | Technical indicators |
-| [rclone](https://rclone.org/) | Cloud storage sync |
+| [gspread](https://github.com/burnash/gspread) | Google Sheets API |
 
 ---
 

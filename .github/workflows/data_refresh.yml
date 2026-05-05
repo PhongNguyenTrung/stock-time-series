@@ -39,25 +39,18 @@ jobs:
           if [ "${{ github.event.inputs.force }}" = "true" ]; then
             FORCE_FLAG="--force"
           fi
-          python scripts/run_pipeline.py --skip-upload $FORCE_FLAG
+          python scripts/run_pipeline.py --skip-upload --skip-sheets $FORCE_FLAG
 
-      # ── Google Sheets upload ──────────────────────────────────────────────
-      # Kích hoạt khi secret GOOGLE_SERVICE_ACCOUNT_JSON được cấu hình.
-      # Setup:
-      #   1. Tạo service account trong Google Cloud Console
-      #   2. Enable Sheets API + Drive API
-      #   3. Tải JSON key, paste nội dung vào:
-      #      Settings → Secrets → Actions → GOOGLE_SERVICE_ACCOUNT_JSON
-      #   4. Tạo Google Sheet, share với email của service account
-      #   5. Lấy Spreadsheet ID từ URL, thêm vào:
-      #      Settings → Secrets → Actions → SHEETS_SPREADSHEET_ID
+      # ── Google Sheets upload (production) ────────────────────────────────
+      # Kích hoạt khi 2 secrets được cấu hình:
+      #   GOOGLE_SERVICE_ACCOUNT_JSON  ← nội dung JSON key của service account
+      #   SHEETS_SPREADSHEET_ID        ← ID từ URL của Google Sheet
       - name: Upload to Google Sheets
         if: ${{ env.GOOGLE_SERVICE_ACCOUNT_JSON != '' }}
         env:
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           SHEETS_SPREADSHEET_ID: ${{ secrets.SHEETS_SPREADSHEET_ID }}
         run: python -c "from src.sheets import upload_to_sheets; upload_to_sheets()"
-
 
       - name: Report results
         if: always()
