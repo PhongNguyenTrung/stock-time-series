@@ -30,22 +30,28 @@ import pandas as pd
 logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
 log = logging.getLogger("aggregate")
 
-ROOT         = Path(__file__).parent.parent
-RESULTS_DIR  = ROOT / "results"
-OUT_DIR      = RESULTS_DIR / "comparison"
-PLOTS_DIR    = OUT_DIR / "plots"
+ROOT = Path(__file__).parent.parent
+RESULTS_DIR = ROOT / "results"
+OUT_DIR = RESULTS_DIR / "comparison"
+PLOTS_DIR = OUT_DIR / "plots"
 
-TICKERS      = ["VCB", "FPT", "HPG", "VIC", "VNM"]
-METRICS      = ["RMSE", "MAE", "MAPE (%)", "R²"]
+TICKERS = ["VCB", "FPT", "HPG", "VIC", "VNM"]
+METRICS = ["RMSE", "MAE", "MAPE (%)", "R²"]
 REQUIRED_COLS = {"Ticker", "Split", "Model", "RMSE", "MAE", "MAPE (%)", "R²"}
 
 COLORS = [
-    "#2563EB", "#DC2626", "#16A34A", "#D97706",
-    "#7C3AED", "#0891B2", "#BE185D",
+    "#2563EB",
+    "#DC2626",
+    "#16A34A",
+    "#D97706",
+    "#7C3AED",
+    "#0891B2",
+    "#BE185D",
 ]
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────
+
 
 def collect_csvs() -> list[Path]:
     """Tìm tất cả *_results.csv trong results/ (bỏ qua thư mục eda và comparison)."""
@@ -68,8 +74,12 @@ def load_all(csv_paths: list[Path]) -> pd.DataFrame:
                 log.warning("Bỏ qua %s — thiếu cột: %s", path.name, missing)
                 continue
             frames.append(df[list(REQUIRED_COLS)])
-            log.info("  Loaded: %s  (%d rows, models: %s)",
-                     path.name, len(df), df["Model"].unique().tolist())
+            log.info(
+                "  Loaded: %s  (%d rows, models: %s)",
+                path.name,
+                len(df),
+                df["Model"].unique().tolist(),
+            )
         except Exception as exc:
             log.warning("Không đọc được %s: %s", path.name, exc)
 
@@ -86,30 +96,32 @@ def rank_models(df: pd.DataFrame) -> pd.DataFrame:
     """Thêm cột Rank_RMSE và Rank_MAE trong mỗi nhóm (Ticker, Split)."""
     df = df.copy()
     df["Rank_RMSE"] = df.groupby(["Ticker", "Split"])["RMSE"].rank(ascending=True).astype(int)
-    df["Rank_MAE"]  = df.groupby(["Ticker", "Split"])["MAE"].rank(ascending=True).astype(int)
+    df["Rank_MAE"] = df.groupby(["Ticker", "Split"])["MAE"].rank(ascending=True).astype(int)
     return df
 
 
 # ── Bảng pivot ─────────────────────────────────────────────────────────────
 
+
 def make_pivot(df: pd.DataFrame, metric: str, split: str) -> pd.DataFrame:
     """Pivot: hàng = Ticker, cột = Model, giá trị = metric."""
     sub = df[df["Split"] == split]
     pivot = sub.pivot_table(index="Ticker", columns="Model", values=metric)
-    pivot.index.name   = "Mã"
+    pivot.index.name = "Mã"
     pivot.columns.name = None
     return pivot.round(4)
 
 
 # ── Visualisation ───────────────────────────────────────────────────────────
 
+
 def plot_bar_comparison(df: pd.DataFrame, metric: str, split: str) -> None:
     """Bar chart: mỗi nhóm cột là 1 mã, mỗi cột là 1 model."""
-    sub     = df[df["Split"] == split].sort_values(["Ticker", "Model"])
-    models  = sorted(sub["Model"].unique())
-    x       = np.arange(len(TICKERS))
-    width   = 0.8 / max(len(models), 1)
-    offsets = np.linspace(-(len(models)-1)/2, (len(models)-1)/2, len(models)) * width
+    sub = df[df["Split"] == split].sort_values(["Ticker", "Model"])
+    models = sorted(sub["Model"].unique())
+    x = np.arange(len(TICKERS))
+    width = 0.8 / max(len(models), 1)
+    offsets = np.linspace(-(len(models) - 1) / 2, (len(models) - 1) / 2, len(models)) * width
 
     fig, ax = plt.subplots(figsize=(13, 5))
     for i, (model, color) in enumerate(zip(models, COLORS)):
@@ -117,27 +129,36 @@ def plot_bar_comparison(df: pd.DataFrame, metric: str, split: str) -> None:
         for ticker in TICKERS:
             row = sub[(sub["Ticker"] == ticker) & (sub["Model"] == model)]
             vals.append(row[metric].values[0] if not row.empty else np.nan)
-        bars = ax.bar(x + offsets[i], vals, width=width * 0.9,
-                      label=model, color=color, alpha=0.85)
+        bars = ax.bar(x + offsets[i], vals, width=width * 0.9, label=model, color=color, alpha=0.85)
         # Label giá trị trên cột
         for bar, v in zip(bars, vals):
             if not np.isnan(v):
-                ax.text(bar.get_x() + bar.get_width() / 2,
-                        bar.get_height() + bar.get_height() * 0.02,
-                        f"{v:.2f}", ha="center", va="bottom", fontsize=7.5)
+                ax.text(
+                    bar.get_x() + bar.get_width() / 2,
+                    bar.get_height() + bar.get_height() * 0.02,
+                    f"{v:.2f}",
+                    ha="center",
+                    va="bottom",
+                    fontsize=7.5,
+                )
 
     ax.set_xticks(x)
     ax.set_xticklabels(TICKERS, fontsize=11)
     ax.set_ylabel(metric)
-    ax.set_title(f"So sánh {metric} — Split {split.replace('_', '/')} "
-                 f"({'Thấp hơn = tốt hơn' if metric != 'R²' else 'Cao hơn = tốt hơn'})",
-                 pad=10)
+    ax.set_title(
+        f"So sánh {metric} — Split {split.replace('_', '/')} "
+        f"({'Thấp hơn = tốt hơn' if metric != 'R²' else 'Cao hơn = tốt hơn'})",
+        pad=10,
+    )
     ax.legend(loc="upper right", fontsize=9)
     ax.yaxis.set_major_formatter(mticker.FormatStrFormatter("%.2f"))
     ax.grid(axis="y", ls=":", alpha=0.4)
     plt.tight_layout()
 
-    fname = PLOTS_DIR / f"comparison_{metric.lower().replace(' ', '_').replace('(', '').replace(')', '')}_{split}.png"
+    fname = (
+        PLOTS_DIR
+        / f"comparison_{metric.lower().replace(' ', '_').replace('(', '').replace(')', '')}_{split}.png"
+    )
     fig.savefig(fname, dpi=150, bbox_inches="tight")
     plt.close(fig)
     log.info("  Saved → %s", fname.relative_to(ROOT))
@@ -145,15 +166,19 @@ def plot_bar_comparison(df: pd.DataFrame, metric: str, split: str) -> None:
 
 def plot_heatmap(df: pd.DataFrame, metric: str, split: str) -> None:
     """Heatmap pivot: model × ticker, màu = giá trị metric."""
-    pivot   = make_pivot(df, metric, split)
-    reverse = (metric == "R²")   # R²: màu tốt = cao
+    pivot = make_pivot(df, metric, split)
+    reverse = metric == "R²"  # R²: màu tốt = cao
 
     fig, ax = plt.subplots(figsize=(max(8, len(pivot.columns) * 1.4), 4))
     import seaborn as sns
+
     sns.heatmap(
-        pivot.T, annot=True, fmt=".3f",
+        pivot.T,
+        annot=True,
+        fmt=".3f",
         cmap="RdYlGn" if reverse else "RdYlGn_r",
-        linewidths=0.5, ax=ax,
+        linewidths=0.5,
+        ax=ax,
         cbar_kws={"label": metric, "shrink": 0.8},
     )
     ax.set_title(f"Heatmap {metric} — Split {split.replace('_', '/')}", pad=10)
@@ -161,7 +186,10 @@ def plot_heatmap(df: pd.DataFrame, metric: str, split: str) -> None:
     ax.set_ylabel("Model")
     plt.tight_layout()
 
-    fname = PLOTS_DIR / f"heatmap_{metric.lower().replace(' ', '_').replace('(', '').replace(')', '')}_{split}.png"
+    fname = (
+        PLOTS_DIR
+        / f"heatmap_{metric.lower().replace(' ', '_').replace('(', '').replace(')', '')}_{split}.png"
+    )
     fig.savefig(fname, dpi=150, bbox_inches="tight")
     plt.close(fig)
     log.info("  Saved → %s", fname.relative_to(ROOT))
@@ -169,22 +197,26 @@ def plot_heatmap(df: pd.DataFrame, metric: str, split: str) -> None:
 
 def plot_rank_summary(df: pd.DataFrame, split: str) -> None:
     """Bar chart xếp hạng trung bình RMSE theo model."""
-    sub     = df[df["Split"] == split]
-    avg_rank = (
-        sub.groupby("Model")["Rank_RMSE"]
-        .mean()
-        .sort_values()
-        .reset_index()
-    )
+    sub = df[df["Split"] == split]
+    avg_rank = sub.groupby("Model")["Rank_RMSE"].mean().sort_values().reset_index()
 
     fig, ax = plt.subplots(figsize=(max(6, len(avg_rank) * 1.2), 4))
     bars = ax.bar(
-        avg_rank["Model"], avg_rank["Rank_RMSE"],
-        color=COLORS[:len(avg_rank)], alpha=0.85, edgecolor="white",
+        avg_rank["Model"],
+        avg_rank["Rank_RMSE"],
+        color=COLORS[: len(avg_rank)],
+        alpha=0.85,
+        edgecolor="white",
     )
     for bar, v in zip(bars, avg_rank["Rank_RMSE"]):
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.05,
-                f"{v:.2f}", ha="center", va="bottom", fontsize=9)
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + 0.05,
+            f"{v:.2f}",
+            ha="center",
+            va="bottom",
+            fontsize=9,
+        )
 
     ax.set_ylabel("Xếp hạng RMSE trung bình (1 = tốt nhất)")
     ax.set_title(f"Xếp hạng trung bình theo RMSE — Split {split.replace('_', '/')}", pad=10)
@@ -201,6 +233,7 @@ def plot_rank_summary(df: pd.DataFrame, split: str) -> None:
 
 # ── Main ────────────────────────────────────────────────────────────────────
 
+
 def print_section(title: str) -> None:
     log.info("─" * 55)
     log.info("  %s", title)
@@ -209,10 +242,13 @@ def print_section(title: str) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Tổng hợp kết quả dự báo chuỗi thời gian")
-    parser.add_argument("--split",   default=None, choices=["70_30", "80_20"],
-                        help="Chỉ xử lý 1 split (mặc định: cả hai)")
-    parser.add_argument("--no-plot", action="store_true",
-                        help="Bỏ qua bước vẽ biểu đồ")
+    parser.add_argument(
+        "--split",
+        default=None,
+        choices=["70_30", "80_20"],
+        help="Chỉ xử lý 1 split (mặc định: cả hai)",
+    )
+    parser.add_argument("--no-plot", action="store_true", help="Bỏ qua bước vẽ biểu đồ")
     args = parser.parse_args()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -251,7 +287,7 @@ def main() -> None:
     for split in splits:
         for metric in ["RMSE", "MAE"]:
             pivot = make_pivot(df, metric, split)
-            out   = OUT_DIR / f"chapter5_pivot_{metric.lower()}_{split}.csv"
+            out = OUT_DIR / f"chapter5_pivot_{metric.lower()}_{split}.csv"
             pivot.to_csv(out, encoding="utf-8-sig")
             log.info("  Saved → %s", out.relative_to(ROOT))
             print(f"\n  {metric} — Split {split.replace('_', '/')}:")
@@ -268,15 +304,16 @@ def main() -> None:
                 plot_heatmap(df, metric, split)
             plot_rank_summary(df, split)
 
-        log.info("  Tổng %d biểu đồ → %s",
-                 len(list(PLOTS_DIR.iterdir())),
-                 PLOTS_DIR.relative_to(ROOT))
+        log.info(
+            "  Tổng %d biểu đồ → %s", len(list(PLOTS_DIR.iterdir())), PLOTS_DIR.relative_to(ROOT)
+        )
 
     # ── 5. Tóm tắt kết quả tốt nhất ──
     print_section("5. Model tốt nhất theo RMSE (mỗi mã, mỗi split)")
     best = (
-        df.loc[df.groupby(["Ticker", "Split"])["RMSE"].idxmin()]
-        [["Ticker", "Split", "Model", "RMSE", "MAE", "R²"]]
+        df.loc[df.groupby(["Ticker", "Split"])["RMSE"].idxmin()][
+            ["Ticker", "Split", "Model", "RMSE", "MAE", "R²"]
+        ]
         .sort_values(["Split", "Ticker"])
         .round({"RMSE": 2, "MAE": 2, "R²": 4})
         .reset_index(drop=True)

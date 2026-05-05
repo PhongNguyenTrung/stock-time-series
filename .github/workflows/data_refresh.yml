@@ -1,0 +1,62 @@
+name: Data Refresh
+
+# Chạy thủ công hoặc tự động mỗi thứ 2 lúc 8:00 SA (UTC+7 = 01:00 UTC)
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Force re-download (bỏ qua freshness cache)"
+        required: false
+        default: "false"
+        type: boolean
+
+  schedule:
+    - cron: "0 1 * * 1"   # Thứ 2, 01:00 UTC
+
+jobs:
+  refresh:
+    name: Refresh Stock Data
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # vnstock (VCI) thường bị block ngoài IP Việt Nam.
+      # Pipeline tự động fallback sang yfinance (.VN suffix).
+      - name: Run pipeline (skip upload)
+        run: |
+          FORCE_FLAG=""
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            FORCE_FLAG="--force"
+          fi
+          python scripts/run_pipeline.py --skip-upload $FORCE_FLAG
+
+      # Optional: upload lên Google Drive nếu RCLONE_CONFIG được cấu hình.
+      # Setup: Settings → Secrets → RCLONE_CONFIG = base64(~/.config/rclone/rclone.conf)
+      - name: Upload to Google Drive
+        if: ${{ env.RCLONE_CONFIG != '' }}
+        env:
+          RCLONE_CONFIG: ${{ secrets.RCLONE_CONFIG }}
+        run: |
+          sudo apt-get install -y rclone
+          mkdir -p ~/.config/rclone
+          echo "$RCLONE_CONFIG" | base64 -d > ~/.config/rclone/rclone.conf
+          python scripts/run_pipeline.py --skip-upload  # data đã có, chỉ chạy upload
+          python -c "from src.upload import upload; upload()"
+
+      - name: Report results
+        if: always()
+        run: |
+          echo "=== Split info ==="
+          cat data/processed/splits/split_info.json || echo "(không có file)"
+          echo ""
+          echo "=== Số dòng raw data ==="
+          wc -l data/raw/*.csv 2>/dev/null || echo "(không có file)"

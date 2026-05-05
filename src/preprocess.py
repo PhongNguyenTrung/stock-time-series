@@ -36,16 +36,12 @@ def _clean(df: pd.DataFrame) -> pd.DataFrame:
     df = df.dropna(subset=["close"])
     # Forward-fill minor gaps for other OHLCV columns.
     # limit=3: covers at most a long weekend (Fri–Mon = 3 calendar days gap).
-    df[["open", "high", "low", "volume"]] = (
-        df[["open", "high", "low", "volume"]].ffill(limit=3)
-    )
+    df[["open", "high", "low", "volume"]] = df[["open", "high", "low", "volume"]].ffill(limit=3)
     return df
 
 
 def _add_indicators(df: pd.DataFrame) -> pd.DataFrame:
     close = df["close"]
-    high = df["high"]
-    low = df["low"]
 
     # Moving Averages
     df["ma_5"] = ta.trend.sma_indicator(close, window=5)

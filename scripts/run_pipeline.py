@@ -49,9 +49,9 @@ def main() -> None:
     log.info("Pipeline started")
 
     try:
-        collected   = _step("1/4  collect",    collect_all,    force=args.force)
+        collected = _step("1/4  collect", collect_all, force=args.force)
         preprocessed = _step("2/4  preprocess", preprocess_all)
-        _step("3/4  split",      split_all)
+        _step("3/4  split", split_all)
 
         if args.skip_upload:
             log.info("STEP: 4/4  upload — SKIPPED (--skip-upload)")
@@ -66,13 +66,11 @@ def main() -> None:
         sys.exit(1)
 
     # Warn if any tickers failed during collect / preprocess
-    failed_collect = [t for t in ["VCB", "FPT", "HPG", "VIC", "VNM"]
-                      if t not in (collected or {})]
+    failed_collect = [t for t in ["VCB", "FPT", "HPG", "VIC", "VNM"] if t not in (collected or {})]
     if failed_collect:
         log.warning("Tickers not collected: %s", failed_collect)
 
-    failed_pre = [t for t in ["VCB", "FPT", "HPG", "VIC", "VNM"]
-                  if t not in (preprocessed or {})]
+    failed_pre = [t for t in ["VCB", "FPT", "HPG", "VIC", "VNM"] if t not in (preprocessed or {})]
     if failed_pre:
         log.warning("Tickers not preprocessed: %s", failed_pre)
 

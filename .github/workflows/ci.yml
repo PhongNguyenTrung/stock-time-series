@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── 1. Lint ────────────────────────────────────────────────────────────
+  lint:
+    name: Lint (ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install ruff
+        run: pip install "ruff>=0.4.0"
+
+      - name: Check style
+        run: ruff check src/ scripts/
+
+      - name: Check formatting
+        run: ruff format --check src/ scripts/
+
+  # ── 2. Validate notebooks ──────────────────────────────────────────────
+  validate-notebooks:
+    name: Validate Notebooks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install nbformat
+        run: pip install "nbformat>=5.0.0"
+
+      - name: Check notebook integrity
+        run: |
+          python - <<'EOF'
+          import nbformat, sys
+          from pathlib import Path
+
+          errors = []
+          for p in sorted(Path("notebooks").glob("*.ipynb")):
+              try:
+                  nb = nbformat.read(p, as_version=4)
+                  nbformat.validate(nb)
+                  print(f"  OK    {p.name}  ({len(nb.cells)} cells)")
+              except Exception as exc:
+                  errors.append(f"  FAIL  {p.name}: {exc}")
+
+          if errors:
+              print("\nLỗi phát hiện:")
+              for e in errors:
+                  print(e)
+              sys.exit(1)
+          else:
+              print(f"\nTất cả {len(list(Path('notebooks').glob('*.ipynb')))} notebook hợp lệ.")
+          EOF
+
+  # ── 3. Import smoke test ───────────────────────────────────────────────
+  smoke-test:
+    name: Smoke Test (src imports)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install production dependencies
+        run: pip install -r requirements.txt
+
+      - name: Check src modules import cleanly
+        run: |
+          python - <<'EOF'
+          import sys
+          sys.path.insert(0, ".")
+          errors = []
+          modules = ["src.collect", "src.preprocess", "src.split", "src.upload"]
+          for mod in modules:
+              try:
+                  __import__(mod)
+                  print(f"  OK    {mod}")
+              except Exception as exc:
+                  errors.append(f"  FAIL  {mod}: {exc}")
+          if errors:
+              for e in errors: print(e)
+              sys.exit(1)
+          EOF

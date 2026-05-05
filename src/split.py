@@ -61,8 +61,12 @@ def split_ticker(ticker: str) -> dict:
         }
         log.info(
             "%s [%s]: train=%d rows (→%s) | test=%d rows (%s→)",
-            ticker, label, len(train), info["splits"][label]["train_end"],
-            len(test), cut_date,
+            ticker,
+            label,
+            len(train),
+            info["splits"][label]["train_end"],
+            len(test),
+            cut_date,
         )
 
     return info

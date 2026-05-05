@@ -41,11 +41,13 @@ def upload() -> bool:
 
     destination = f"{REMOTE}:{GDRIVE_FOLDER}/splits"
     cmd = [
-        "rclone", "sync",
+        "rclone",
+        "sync",
         str(LOCAL_DIR),
         destination,
         "--progress",
-        "--transfers", "4",
+        "--transfers",
+        "4",
     ]
 
     log.info("Syncing %s → %s", LOCAL_DIR, destination)

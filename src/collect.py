@@ -22,6 +22,7 @@ END_DATE: str = os.getenv("END_DATE", datetime.today().strftime("%Y-%m-%d"))
 RAW_DIR = Path("data/raw")
 FRESHNESS_HOURS = 24
 
+
 def _is_fresh(path: Path) -> bool:
     if not path.exists():
         return False
