@@ -58,18 +58,6 @@ jobs:
           SHEETS_SPREADSHEET_ID: ${{ secrets.SHEETS_SPREADSHEET_ID }}
         run: python -c "from src.sheets import upload_to_sheets; upload_to_sheets()"
 
-      # ── Google Drive upload (rclone) ──────────────────────────────────────
-      # Kích hoạt khi secret RCLONE_CONFIG được cấu hình.
-      # Setup: base64 encode rclone.conf → lưu vào secret RCLONE_CONFIG
-      - name: Upload to Google Drive
-        if: ${{ env.RCLONE_CONFIG != '' }}
-        env:
-          RCLONE_CONFIG: ${{ secrets.RCLONE_CONFIG }}
-        run: |
-          sudo apt-get install -y rclone
-          mkdir -p ~/.config/rclone
-          echo "$RCLONE_CONFIG" | base64 -d > ~/.config/rclone/rclone.conf
-          python -c "from src.upload import upload; upload()"
 
       - name: Report results
         if: always()
