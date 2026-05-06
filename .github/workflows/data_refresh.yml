@@ -9,7 +9,7 @@ on:
       force:
         description: "Force re-download (bỏ qua freshness cache)"
         required: false
-        default: "false"
+        default: false
         type: boolean
 
   schedule:
