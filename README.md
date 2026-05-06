@@ -109,33 +109,30 @@ test  = pd.read_csv(SPLITS_DIR / "70_30/VCB_test.csv",  parse_dates=["date"])
 ## Pipeline
 
 ```mermaid
-flowchart LR
-    subgraph Sources["Data Sources"]
-        A1[vnstock]
-        A2[yfinance .VN]
-    end
+flowchart TD
+    A([VCB · FPT · HPG · VIC · VNM])
 
-    subgraph Preprocess["Preprocess"]
-        B1[Clean\nMissing Values]
-        B2[MA · RSI\nMACD · BB]
-    end
+    B["①  Collect
+    vnstock / yfinance .VN"]
 
-    subgraph Split["Split"]
-        C1[70 / 30]
-        C2[80 / 20]
-    end
+    C["②  Preprocess
+    Clean · Fill missing · Normalize"]
 
-    subgraph Output["Output"]
-        D1[Google Sheets\nProduction]
-        D2[Local CSV\nDevelopment]
-    end
+    D["③  Feature Engineering
+    MA · RSI · MACD · Bollinger Bands"]
 
-    A1 -->|primary| B1
-    A2 -->|fallback| B1
-    B1 --> B2
-    B2 --> C1 & C2
-    C1 & C2 --> D1
-    C1 & C2 --> D2
+    E{④  Split}
+
+    F["70% Train / 30% Test"]
+    G["80% Train / 20% Test"]
+
+    H[(Google Sheets)]
+    I[(Local CSV)]
+
+    A --> B --> C --> D --> E
+    E --> F & G
+    F --> H & I
+    G --> H & I
 ```
 
 | Step | Module | Output |
