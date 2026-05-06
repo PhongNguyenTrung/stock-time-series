@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Forecast Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <style>
+    /* ── Design tokens ── */
+    :root {
+      --bg:           #f1f5f9;
+      --bg-2:         #e8edf5;
+      --surface:      #ffffff;
+      --surface-2:    #f8fafc;
+      --border:       #e2e8f0;
+      --border-2:     #cbd5e1;
+      --text:         #0f172a;
+      --text-2:       #334155;
+      --muted:        #64748b;
+      --muted-2:      #94a3b8;
+
+      --green:        #16a34a;
+      --green-2:      #15803d;
+      --green-lt:     #dcfce7;
+      --green-glow:   #16a34a26;
+
+      --red:          #dc2626;
+      --red-lt:       #fee2e2;
+      --red-glow:     #dc262622;
+
+      --amber:        #d97706;
+      --amber-lt:     #fef3c7;
+      --amber-glow:   #d9770622;
+
+      --blue:         #2563eb;
+      --blue-lt:      #dbeafe;
+      --blue-glow:    #2563eb22;
+
+      --purple:       #7c3aed;
+      --purple-lt:    #ede9fe;
+
+      --header-h:     60px;
+      --radius:       10px;
+      --radius-lg:    14px;
+      --shadow-sm:    0 1px 2px rgba(0,0,0,.06);
+      --shadow:       0 1px 3px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
+      --shadow-md:    0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+      --shadow-lg:    0 8px 24px rgba(0,0,0,.10), 0 2px 8px rgba(0,0,0,.06);
+      --trans:        all .2s cubic-bezier(.4,0,.2,1);
+    }
+
+    [data-theme="dark"] {
+      --bg:           #0d1117;
+      --bg-2:         #161b22;
+      --surface:      #1c2128;
+      --surface-2:    #22272e;
+      --border:       #30363d;
+      --border-2:     #3d444d;
+      --text:         #e6edf3;
+      --text-2:       #adbac7;
+      --muted:        #768390;
+      --muted-2:      #545d68;
+
+      --green-lt:     #16a34a22;
+      --red-lt:       #dc262622;
+      --amber-lt:     #d9770622;
+      --blue-lt:      #2563eb22;
+      --purple-lt:    #7c3aed22;
+
+      --shadow-sm:    0 1px 2px rgba(0,0,0,.3);
+      --shadow:       0 1px 3px rgba(0,0,0,.4), 0 2px 6px rgba(0,0,0,.3);
+      --shadow-md:    0 4px 12px rgba(0,0,0,.5), 0 2px 4px rgba(0,0,0,.3);
+      --shadow-lg:    0 8px 24px rgba(0,0,0,.6), 0 2px 8px rgba(0,0,0,.4);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background .3s, color .3s;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+    /* ══════════════════ HEADER ══════════════════ */
+    header {
+      height: var(--header-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      box-shadow: var(--shadow);
+      transition: background .3s, border-color .3s;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .header-logo-icon {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px var(--green-glow);
+    }
+    .header-logo-text {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.4px;
+      white-space: nowrap;
+    }
+    .header-logo-text span { color: var(--green); }
+
+    .header-divider {
+      width: 1px; height: 20px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    .header-sub {
+      font-size: 12.5px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--green-lt);
+      color: var(--green);
+      border: 1px solid #16a34a33;
+      white-space: nowrap;
+    }
+    .badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:.4; transform:scale(.8); }
+    }
+
+    /* Dark mode toggle */
+    .theme-toggle {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--trans);
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { background: var(--bg); color: var(--text); border-color: var(--border-2); }
+
+    /* ══════════════════ LAYOUT ══════════════════ */
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 28px 24px 60px;
+    }
+
+    /* ══════════════════ PAGE HEADER ══════════════════ */
+    .page-header {
+      margin-bottom: 28px;
+    }
+    .page-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.6px;
+      margin-bottom: 4px;
+    }
+    .page-desc {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    /* ══════════════════ CONTROLS ══════════════════ */
+    .controls-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: flex-end;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .control-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--muted);
+    }
+
+    /* Pill group (for ticker & split) */
+    .pill-group {
+      display: flex;
+      gap: 4px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+    }
+    .pill-btn {
+      height: 30px;
+      padding: 0 12px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--trans);
+      white-space: nowrap;
+    }
+    .pill-btn:hover { background: var(--surface); color: var(--text); }
+    .pill-btn.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+      font-weight: 600;
+    }
+    .pill-btn.active.green-active { background: var(--green); color: #fff; }
+
+    /* Model select */
+    .styled-select {
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+      min-width: 160px;
+      transition: var(--trans);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 32px;
+    }
+    .styled-select:focus { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-glow); }
+    .styled-select:hover { border-color: var(--border-2); }
+
+    /* ══════════════════ METRIC CARDS ══════════════════ */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 900px) { .metrics-row { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .metrics-row { grid-template-columns: 1fr 1fr; } }
+
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 20px 18px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+      transition: var(--trans);
+    }
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+    .metric-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+    .metric-card.green::before { background: linear-gradient(90deg, #16a34a, #22c55e); }
+    .metric-card.red::before   { background: linear-gradient(90deg, #dc2626, #ef4444); }
+    .metric-card.amber::before { background: linear-gradient(90deg, #d97706, #f59e0b); }
+    .metric-card.blue::before  { background: linear-gradient(90deg, #2563eb, #3b82f6); }
+
+    .metric-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      font-size: 18px;
+    }
+    .metric-card.green .metric-icon { background: var(--green-lt); }
+    .metric-card.red   .metric-icon { background: var(--red-lt); }
+    .metric-card.amber .metric-icon { background: var(--amber-lt); }
+    .metric-card.blue  .metric-icon { background: var(--blue-lt); }
+
+    .metric-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .metric-value {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -1px;
+      font-variant-numeric: tabular-nums;
+    }
+    .metric-card.green .metric-value { color: var(--green); }
+    .metric-card.red   .metric-value { color: var(--red); }
+    .metric-card.amber .metric-value { color: var(--amber); }
+    .metric-card.blue  .metric-value { color: var(--blue); }
+
+    .metric-sub {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ══════════════════ CARDS ══════════════════ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      transition: background .3s, border-color .3s;
+    }
+
+    .chart-card {
+      padding: 22px;
+    }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .section-label-icon {
+      width: 28px; height: 28px;
+      border-radius: 7px;
+      background: var(--green-lt);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green);
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.2px;
+    }
+    .section-title span {
+      color: var(--muted);
+      font-weight: 400;
+      font-size: 13px;
+      margin-left: 5px;
+    }
+
+    #chart-pred    { height: 380px; }
+    #chart-bar     { height: 280px; }
+    #chart-scatter { height: 280px; }
+
+    /* ══════════════════ LAYOUT GRIDS ══════════════════ */
+    .chart-main   { margin-bottom: 20px; }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ══════════════════ TABLE ══════════════════ */
+    .table-card { padding: 22px; }
+    .table-wrap { overflow-x: auto; }
+    .table-card table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .table-card th {
+      text-align: left;
+      padding: 9px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .table-card th:first-child { border-radius: 6px 0 0 0; }
+    .table-card th:last-child  { border-radius: 0 6px 0 0; }
+    .table-card td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-2);
+      font-variant-numeric: tabular-nums;
+    }
+    .table-card tr:last-child td { border-bottom: none; }
+    .table-card tr:hover td { background: var(--bg); }
+
+    .ticker-tag {
+      display: inline-flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--text);
+    }
+    .pill {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .pill-green  { background: var(--green-lt);  color: var(--green); }
+    .pill-blue   { background: var(--blue-lt);   color: var(--blue); }
+
+    .val-good { color: var(--green); font-weight: 600; }
+    .val-ok   { color: var(--amber); font-weight: 600; }
+    .val-bad  { color: var(--red);   font-weight: 600; }
+
+    /* ══════════════════ LOADING / ERROR ══════════════════ */
+    #loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 280px;
+      gap: 16px;
+    }
+    .loading-spinner {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--green);
+      animation: spin .8s linear infinite;
+    }
+    .loading-text {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #error-msg {
+      display: none;
+      background: var(--red-lt);
+      color: var(--red);
+      border: 1px solid #dc262633;
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+
+    /* ══════════════════ SKELETON ══════════════════ */
+    .skeleton {
+      background: linear-gradient(90deg, var(--border) 25%, var(--bg-2) 50%, var(--border) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 6px;
+    }
+    @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+    /* ══════════════════ FOOTER ══════════════════ */
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 48px;
+      padding-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .footer-links { display: flex; gap: 16px; }
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .footer-links a:hover { color: var(--green); }
+    .footer-copy { color: var(--muted-2); }
+
+    /* ══════════════════ RESPONSIVE ══════════════════ */
+    @media (max-width: 600px) {
+      main { padding: 16px 14px 48px; }
+      .controls-card { gap: 14px; }
+      header { padding: 0 16px; }
+      .header-sub { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <a class="header-logo" href="#">
+    <div class="header-logo-icon">
+      <svg width="18" height="18" viewBox="0 0 22 22" fill="none">
+        <rect x="3"  y="5"  width="4" height="10" rx="1" fill="white" opacity=".9"/>
+        <line x1="5"  y1="2"  x2="5"  y2="5"  stroke="white" stroke-width="1.5" opacity=".9"/>
+        <line x1="5"  y1="15" x2="5"  y2="18" stroke="white" stroke-width="1.5" opacity=".9"/>
+        <rect x="15" y="7"  width="4" height="8"  rx="1" fill="white" opacity=".6"/>
+        <line x1="17" y1="4"  x2="17" y2="7"  stroke="white" stroke-width="1.5" opacity=".6"/>
+        <line x1="17" y1="15" x2="17" y2="19" stroke="white" stroke-width="1.5" opacity=".6"/>
+        <polyline points="1,14 5,10 9,12 13,7 17,9 21,4" stroke="white" stroke-width="1.2" fill="none" opacity=".5"/>
+      </svg>
+    </div>
+    <span class="header-logo-text">Stock<span>Forecast</span></span>
+  </a>
+  <div class="header-divider"></div>
+  <span class="header-sub">Vietnamese Market · VCB · FPT · HPG · VIC · VNM</span>
+  <div class="header-right">
+    <div class="badge" id="last-updated">
+      <div class="badge-dot"></div>
+      Loading…
+    </div>
+    <button class="theme-toggle" id="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+      <svg id="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+      <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- ── Main ── -->
+<main>
+
+  <!-- Loading -->
+  <div id="loading">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading forecast data…</div>
+  </div>
+
+  <!-- Error -->
+  <div id="error-msg"></div>
+
+  <!-- App -->
+  <div id="app" style="display:none">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div class="page-title">Forecast Dashboard</div>
+      <div class="page-desc">Comparing model performance across Vietnamese stock tickers — close price prediction</div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-card">
+      <div class="control-group">
+        <div class="control-label">Model</div>
+        <select class="styled-select" id="sel-model"></select>
+      </div>
+      <div class="control-group">
+        <div class="control-label">Ticker</div>
+        <div class="pill-group" id="ticker-group">
+          <button class="pill-btn active green-active" data-ticker="VCB">VCB</button>
+          <button class="pill-btn" data-ticker="FPT">FPT</button>
+          <button class="pill-btn" data-ticker="HPG">HPG</button>
+          <button class="pill-btn" data-ticker="VIC">VIC</button>
+          <button class="pill-btn" data-ticker="VNM">VNM</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="control-label">Train / Test Split</div>
+        <div class="pill-group" id="split-group">
+          <button class="pill-btn active" data-split="70_30">70 / 30</button>
+          <button class="pill-btn" data-split="80_20">80 / 20</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metric cards -->
+    <div class="metrics-row">
+      <div class="metric-card green card">
+        <div class="metric-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        </div>
+        <div class="metric-label">R²</div>
+        <div class="metric-value" id="m-r2">—</div>
+        <div class="metric-sub">Coefficient of determination</div>
+      </div>
+      <div class="metric-card red card">
+        <div class="metric-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="metric-label">RMSE</div>
+        <div class="metric-value" id="m-rmse">—</div>
+        <div class="metric-sub">Root mean squared error</div>
+      </div>
+      <div class="metric-card amber card">
+        <div class="metric-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="metric-label">MAE</div>
+        <div class="metric-value" id="m-mae">—</div>
+        <div class="metric-sub">Mean absolute error</div>
+      </div>
+      <div class="metric-card blue card">
+        <div class="metric-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="metric-label">MAPE</div>
+        <div class="metric-value" id="m-mape">—</div>
+        <div class="metric-sub">Mean absolute % error</div>
+      </div>
+    </div>
+
+    <!-- Prediction chart -->
+    <div class="card chart-card chart-main">
+      <div class="section-label">
+        <div class="section-label-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="section-title">Actual vs Predicted Close Price <span>(VND thousands)</span></div>
+      </div>
+      <div id="chart-pred"></div>
+    </div>
+
+    <!-- Bar + Scatter -->
+    <div class="two-col">
+      <div class="card chart-card">
+        <div class="section-label">
+          <div class="section-label-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div class="section-title">RMSE by Ticker</div>
+        </div>
+        <div id="chart-bar"></div>
+      </div>
+      <div class="card chart-card">
+        <div class="section-label">
+          <div class="section-label-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="2"/><circle cx="17" cy="7" r="2"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="7" r="2"/></svg>
+          </div>
+          <div class="section-title">Actual vs Predicted <span>(scatter)</span></div>
+        </div>
+        <div id="chart-scatter"></div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card table-card">
+      <div class="section-label">
+        <div class="section-label-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+        </div>
+        <div class="section-title">All Tickers — Current Split</div>
+      </div>
+      <div class="table-wrap">
+        <table id="results-table">
+          <thead>
+            <tr>
+              <th>Ticker</th>
+              <th>Model</th>
+              <th>Split</th>
+              <th>RMSE</th>
+              <th>MAE</th>
+              <th>MAPE (%)</th>
+              <th>R²</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- #app -->
+</main>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://github.com/PhongNguyenTrung/stock-time-series" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      GitHub
+    </a>
+  </div>
+  <div class="footer-copy">Vietnamese Stock Market Forecasting · Group Project 2025–2026</div>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════
+   Theme
+══════════════════════════════════════════════ */
+const THEME_KEY = 'stk-theme';
+
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  document.getElementById('icon-sun').style.display  = t === 'dark' ? 'block' : 'none';
+  document.getElementById('icon-moon').style.display = t === 'dark' ? 'none'  : 'block';
+  localStorage.setItem(THEME_KEY, t);
+  if (window._plotlyMounted) rerenderPlotly();
+}
+
+(function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  const pref  = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  applyTheme(saved || pref);
+})();
+
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+});
+
+function isDark() { return document.documentElement.getAttribute('data-theme') === 'dark'; }
+
+/* ══════════════════════════════════════════════
+   State
+══════════════════════════════════════════════ */
+const state = {
+  manifest:    null,
+  predictions: {},
+  metrics:     {},
+  ticker:      'VCB',
+  split:       '70_30',
+};
+
+window._plotlyMounted = false;
+
+/* ══════════════════════════════════════════════
+   Helpers
+══════════════════════════════════════════════ */
+function $(id) { return document.getElementById(id); }
+
+function showError(msg) {
+  $('loading').style.display = 'none';
+  const el = $('error-msg');
+  el.textContent = '⚠ ' + msg;
+  el.style.display = 'block';
+}
+
+function parseCsv(url) {
+  return new Promise((resolve, reject) => {
+    Papa.parse(url, {
+      download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
+      complete: r => resolve(r.data),
+      error:    e => reject(e),
+    });
+  });
+}
+
+function plotlyTheme() {
+  const dark = isDark();
+  return {
+    paper_bgcolor: dark ? '#1c2128' : '#ffffff',
+    plot_bgcolor:  dark ? '#22272e' : '#f8fafc',
+    font: { family: 'Inter, -apple-system, sans-serif', size: 12, color: dark ? '#adbac7' : '#334155' },
+    xaxis: { gridcolor: dark ? '#30363d' : '#e2e8f0', linecolor: dark ? '#30363d' : '#e2e8f0', zerolinecolor: dark ? '#30363d' : '#e2e8f0' },
+    yaxis: { gridcolor: dark ? '#30363d' : '#e2e8f0', linecolor: dark ? '#30363d' : '#e2e8f0', zerolinecolor: dark ? '#30363d' : '#e2e8f0' },
+    legend: { bgcolor: dark ? 'rgba(28,33,40,.9)' : 'rgba(255,255,255,.9)', bordercolor: dark ? '#30363d' : '#e2e8f0', borderwidth: 1 },
+  };
+}
+
+/* animated counter */
+function animateValue(el, end, decimals, suffix) {
+  const duration = 500;
+  const start    = 0;
+  const step     = timestamp => {
+    if (!startTime) startTime = timestamp;
+    const progress = Math.min((timestamp - startTime) / duration, 1);
+    const ease     = 1 - Math.pow(1 - progress, 3);
+    el.textContent = (start + (end - start) * ease).toFixed(decimals) + (suffix || '');
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  let startTime = null;
+  requestAnimationFrame(step);
+}
+
+/* ══════════════════════════════════════════════
+   Boot
+══════════════════════════════════════════════ */
+async function boot() {
+  try {
+    const res = await fetch('data/manifest.json');
+    if (!res.ok) throw new Error(`manifest.json: HTTP ${res.status}`);
+    state.manifest = await res.json();
+
+    const selModel = $('sel-model');
+    for (const m of state.manifest.models) {
+      const opt = document.createElement('option');
+      opt.value = m.name; opt.textContent = m.name;
+      selModel.appendChild(opt);
+    }
+
+    if (state.manifest.last_updated) {
+      $('last-updated').innerHTML = `<div class="badge-dot"></div> Updated ${state.manifest.last_updated}`;
+    }
+
+    await Promise.all(state.manifest.models.map(async m => {
+      const [preds, mets] = await Promise.all([
+        parseCsv('data/' + m.predictions.replace('data/', '')),
+        parseCsv('data/' + m.metrics.replace('data/', '')),
+      ]);
+      state.predictions[m.name] = preds;
+      state.metrics[m.name]     = mets;
+    }));
+
+    $('loading').style.display = 'none';
+    $('app').style.display     = 'block';
+
+    // Model dropdown
+    selModel.addEventListener('change', render);
+
+    // Ticker pills
+    document.querySelectorAll('#ticker-group .pill-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#ticker-group .pill-btn').forEach(b => { b.classList.remove('active','green-active'); });
+        btn.classList.add('active', 'green-active');
+        state.ticker = btn.dataset.ticker;
+        render();
+      });
+    });
+
+    // Split pills
+    document.querySelectorAll('#split-group .pill-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#split-group .pill-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.split = btn.dataset.split;
+        render();
+      });
+    });
+
+    render();
+    window._plotlyMounted = true;
+  } catch(e) {
+    showError(e.message);
+  }
+}
+
+/* ══════════════════════════════════════════════
+   Render
+══════════════════════════════════════════════ */
+function render() {
+  const model  = $('sel-model').value;
+  const ticker = state.ticker;
+  const split  = state.split;
+
+  const preds    = (state.predictions[model] || []).filter(r => r.ticker === ticker && r.split === split);
+  const allMet   = state.metrics[model] || [];
+  const met      = allMet.find(r => r.Ticker === ticker && r.Split === split);
+  const splitMet = allMet.filter(r => r.Split === split);
+
+  renderMetrics(met);
+  renderPredChart(preds, ticker);
+  renderBarChart(splitMet, ticker);
+  renderScatter(preds);
+  renderTable(splitMet);
+}
+
+function rerenderPlotly() {
+  const model  = $('sel-model') ? $('sel-model').value : null;
+  if (!model) return;
+  const ticker = state.ticker;
+  const split  = state.split;
+  const preds    = (state.predictions[model] || []).filter(r => r.ticker === ticker && r.split === split);
+  const allMet   = state.metrics[model] || [];
+  const splitMet = allMet.filter(r => r.Split === split);
+  renderPredChart(preds, ticker);
+  renderBarChart(splitMet, ticker);
+  renderScatter(preds);
+}
+
+/* ── Metrics ── */
+function renderMetrics(met) {
+  if (!met) {
+    ['m-r2','m-rmse','m-mae','m-mape'].forEach(id => { $(id).textContent = '—'; });
+    return;
+  }
+  animateValue($('m-r2'),   Number(met['R²']),        4);
+  animateValue($('m-rmse'), Number(met['RMSE']),       4);
+  animateValue($('m-mae'),  Number(met['MAE']),        4);
+  animateValue($('m-mape'), Number(met['MAPE (%)']),   3, '%');
+}
+
+/* ── Prediction line chart ── */
+function renderPredChart(preds, ticker) {
+  if (!preds.length) { Plotly.purge('chart-pred'); return; }
+  const base = plotlyTheme();
+  const traces = [
+    {
+      x: preds.map(r => r.date), y: preds.map(r => r.actual),
+      name: 'Actual', type: 'scatter', mode: 'lines',
+      line: { color: isDark() ? '#adbac7' : '#334155', width: 2 },
+    },
+    {
+      x: preds.map(r => r.date), y: preds.map(r => r.predicted),
+      name: 'Predicted', type: 'scatter', mode: 'lines',
+      line: { color: '#16a34a', width: 2, dash: 'dot' },
+      fill: 'tonexty',
+      fillcolor: isDark() ? '#16a34a0a' : '#16a34a08',
+    },
+  ];
+  const layout = {
+    ...base,
+    xaxis: { ...base.xaxis, title: { text: 'Date', font: { size: 12 } } },
+    yaxis: { ...base.yaxis, title: { text: 'Close Price (VND thousands)', font: { size: 12 } } },
+    margin: { t: 10, r: 16, b: 52, l: 72 },
+    hovermode: 'x unified',
+    hoverlabel: { bgcolor: isDark() ? '#2d333b' : '#1e293b', font: { color: '#f8fafc', size: 12 }, bordercolor: 'transparent' },
+  };
+  Plotly.react('chart-pred', traces, layout, { responsive: true, displayModeBar: false });
+}
+
+/* ── Bar chart ── */
+function renderBarChart(splitMet, activeTicker) {
+  const TICKERS = ['VCB','FPT','HPG','VIC','VNM'];
+  const base = plotlyTheme();
+  const rmse = TICKERS.map(t => { const r = splitMet.find(m => m.Ticker === t); return r ? Number(r['RMSE']) : null; });
+  const colors = TICKERS.map(t => t === activeTicker ? '#16a34a' : (isDark() ? '#3d444d' : '#cbd5e1'));
+  const traces = [{
+    x: TICKERS, y: rmse, type: 'bar',
+    marker: { color: colors, line: { color: 'transparent' }, cornerradius: 4 },
+    hovertemplate: '<b>%{x}</b>: %{y:.4f}<extra></extra>',
+  }];
+  const layout = {
+    ...base,
+    yaxis: { ...base.yaxis, title: { text: 'RMSE', font: { size: 12 } } },
+    showlegend: false,
+    margin: { t: 8, r: 16, b: 40, l: 56 },
+    bargap: 0.35,
+  };
+  Plotly.react('chart-bar', traces, layout, { responsive: true, displayModeBar: false });
+}
+
+/* ── Scatter ── */
+function renderScatter(preds) {
+  if (!preds.length) { Plotly.purge('chart-scatter'); return; }
+  const base = plotlyTheme();
+  const actual    = preds.map(r => r.actual);
+  const predicted = preds.map(r => r.predicted);
+  const minV = Math.min(...actual, ...predicted);
+  const maxV = Math.max(...actual, ...predicted);
+  const traces = [
+    {
+      x: actual, y: predicted,
+      mode: 'markers', type: 'scatter', name: 'Points',
+      marker: { color: '#2563eb', size: 5, opacity: 0.55, line: { color: 'transparent' } },
+      hovertemplate: 'Actual: <b>%{x:.2f}</b><br>Predicted: <b>%{y:.2f}</b><extra></extra>',
+    },
+    {
+      x: [minV, maxV], y: [minV, maxV],
+      mode: 'lines', name: 'Perfect fit',
+      line: { color: '#dc2626', width: 1.5, dash: 'dash' },
+      hoverinfo: 'skip',
+    },
+  ];
+  const layout = {
+    ...base,
+    xaxis: { ...base.xaxis, title: { text: 'Actual', font: { size: 12 } } },
+    yaxis: { ...base.yaxis, title: { text: 'Predicted', font: { size: 12 } } },
+    showlegend: false,
+    margin: { t: 8, r: 16, b: 52, l: 64 },
+  };
+  Plotly.react('chart-scatter', traces, layout, { responsive: true, displayModeBar: false });
+}
+
+/* ── Table ── */
+function renderTable(splitMet) {
+  const TICKERS = ['VCB','FPT','HPG','VIC','VNM'];
+  const tbody = $('table-body');
+  tbody.innerHTML = '';
+
+  const rows = TICKERS.map(t => splitMet.find(r => r.Ticker === t)).filter(Boolean);
+
+  const rmseVals = rows.map(r => Number(r.RMSE));
+  const minRmse  = Math.min(...rmseVals);
+  const maxRmse  = Math.max(...rmseVals);
+  const r2Vals   = rows.map(r => Number(r['R²']));
+  const maxR2    = Math.max(...r2Vals);
+
+  for (const row of rows) {
+    const tr = document.createElement('tr');
+    const splitLabel = row.Split === '70_30' ? '70 / 30' : '80 / 20';
+    const splitClass = row.Split === '70_30' ? 'pill-green' : 'pill-blue';
+
+    const rmse = Number(row.RMSE);
+    const mape = Number(row['MAPE (%)']);
+    const r2   = Number(row['R²']);
+
+    const rmseClass = rmse === minRmse ? 'val-good' : (rmse === maxRmse ? 'val-bad' : '');
+    const mapeClass = mape < 1 ? 'val-good' : (mape < 5 ? 'val-ok' : 'val-bad');
+    const r2Class   = r2 === maxR2 ? 'val-good' : '';
+
+    tr.innerHTML = `
+      <td class="ticker-tag">${row.Ticker}</td>
+      <td>${row.Model}</td>
+      <td><span class="pill ${splitClass}">${splitLabel}</span></td>
+      <td class="${rmseClass}">${rmse.toFixed(4)}</td>
+      <td>${Number(row.MAE).toFixed(4)}</td>
+      <td class="${mapeClass}">${mape.toFixed(3)}%</td>
+      <td class="${r2Class}">${r2.toFixed(4)}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+/* ── Start ── */
+boot();
+</script>
+</body>
+</html>

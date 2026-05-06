@@ -1,0 +1,10 @@
+{
+  "models": [
+    {
+      "name": "Linear Regression",
+      "predictions": "data/linear_regression_predictions.csv",
+      "metrics": "data/linear_regression_metrics.csv"
+    }
+  ],
+  "last_updated": "2026-05-06"
+}
