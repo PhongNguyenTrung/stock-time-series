@@ -38,7 +38,7 @@ GitHub Actions (cron Mon–Fri 16:00 ICT)
     ↓  upload → Google Sheets ✓
 ```
 
-> **Google Sheets link:** *(add link here after setup)*
+> **Google Sheets link:** [stock-time-series data](https://docs.google.com/spreadsheets/d/1p7yWv51McAEHGJ7KyD4j8H1CDXwuVcUOGT-pVKxcM_Q/edit?usp=sharing)
 
 ---
 
@@ -162,8 +162,43 @@ Columns in each `*_train.csv` / `*_test.csv` file:
 
 | Split | Train end | Test start | Train rows | Test rows |
 |-------|-----------|------------|------------|-----------|
-| 70/30 | 2023-02-21 | 2023-02-22 | ~1 854 | ~796 |
-| 80/20 | 2024-03-14 | 2024-03-15 | ~2 120 | ~530 |
+| 70/30 | 2023-02-20 | 2023-02-21 | 1 853 | 795 |
+| 80/20 | 2024-03-12 | 2024-03-13 | 2 118 | 530 |
+
+---
+
+## Notebooks
+
+| Notebook | Purpose |
+|----------|---------|
+| `notebooks/00_template.ipynb` | **Members 2/3/4** — copy and fill in your model |
+| `notebooks/01_linear_regression.ipynb` | Member 1 — Linear Regression with lag features |
+| `notebooks/02_eda.ipynb` | Member 1 — Exploratory Data Analysis for Chapter 3 |
+
+### Guide for Members 2, 3, 4
+
+1. Copy `00_template.ipynb` and rename it (e.g. `02_arima_svr.ipynb`)
+2. Set `MODEL_NAME`, implement `train_and_predict()` and `prepare_data()`
+3. Run the notebook — results are saved automatically to `results/<model_name>/`
+4. Send `results/<model_name>/<model_name>_results.csv` to Member 1
+
+Required CSV format:
+```
+Ticker,Split,Model,RMSE,MAE,MAPE (%),R²
+VCB,70_30,LSTM,0.85,0.60,1.02,0.96
+...
+```
+
+### Aggregating results (Member 1 — Chapter 5)
+
+Once all members have submitted their CSV files:
+
+```bash
+python scripts/aggregate_results.py
+# → results/comparison/chapter5_comparison.csv
+# → results/comparison/chapter5_pivot_rmse_*.csv
+# → results/comparison/plots/
+```
 
 ---
 
@@ -175,6 +210,8 @@ Columns in each `*_train.csv` / `*_test.csv` file:
 | [yfinance](https://github.com/ranaroussi/yfinance) | Fallback data source |
 | [pandas](https://pandas.pydata.org/) | Data manipulation |
 | [ta](https://github.com/bukosabino/ta) | Technical indicators |
+| [scikit-learn](https://scikit-learn.org/) | Linear Regression, StandardScaler |
+| [statsmodels](https://www.statsmodels.org/) | ADF test, seasonal decomposition |
 | [gspread](https://github.com/burnash/gspread) | Google Sheets API |
 
 ---
