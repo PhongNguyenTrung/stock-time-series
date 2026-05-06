@@ -17,6 +17,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+sheets = [
+    "gspread>=6.0.0",
+    "google-auth>=2.0.0",
+]
 dev = [
     "scikit-learn>=1.4.0",
     "matplotlib>=3.8.0",
@@ -26,6 +30,8 @@ dev = [
     "nbconvert>=7.0.0",
     "nbformat>=5.0.0",
     "ruff>=0.4.0",
+    "gspread>=6.0.0",
+    "google-auth>=2.0.0",
 ]
 
 [tool.setuptools.packages.find]

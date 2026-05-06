@@ -86,7 +86,7 @@ jobs:
           import sys
           sys.path.insert(0, ".")
           errors = []
-          modules = ["src.collect", "src.preprocess", "src.split", "src.upload"]
+          modules = ["src.collect", "src.preprocess", "src.split", "src.upload", "src.sheets"]
           for mod in modules:
               try:
                   __import__(mod)
