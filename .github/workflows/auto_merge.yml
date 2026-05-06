@@ -1,0 +1,65 @@
+name: Auto-merge Dependabot PRs
+
+# Trigger khi Dependabot mở hoặc cập nhật PR
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    name: Auto-merge
+    runs-on: ubuntu-latest
+    # Chỉ chạy khi PR đến từ Dependabot
+    if: github.actor == 'dependabot[bot]'
+
+    steps:
+      # Lấy metadata: tên package, version cũ/mới, update-type
+      - name: Fetch Dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── Patch / minor → approve + enable auto-merge ──────────────────
+      # auto-merge chờ CI pass (ci.yml) rồi mới merge
+      - name: Approve PR (patch / minor)
+        if: |
+          steps.meta.outputs.update-type == 'version-update:semver-patch' ||
+          steps.meta.outputs.update-type == 'version-update:semver-minor'
+        run: gh pr review --approve "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge (patch / minor)
+        if: |
+          steps.meta.outputs.update-type == 'version-update:semver-patch' ||
+          steps.meta.outputs.update-type == 'version-update:semver-minor'
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── Major → comment, KHÔNG auto-merge ────────────────────────────
+      - name: Comment on major update
+        if: steps.meta.outputs.update-type == 'version-update:semver-major'
+        run: |
+          gh pr comment "$PR_URL" --body "$(cat <<'EOF'
+          ⚠️ **Major version bump** — cần review thủ công trước khi merge.
+
+          | | |
+          |---|---|
+          | Package | \`${{ steps.meta.outputs.dependency-names }}\` |
+          | Update | \`${{ steps.meta.outputs.previous-version }}\` → \`${{ steps.meta.outputs.new-version }}\` |
+          | Lý do chặn | Major release có thể chứa breaking changes ảnh hưởng pipeline hoặc notebooks |
+
+          Kiểm tra changelog trước khi merge.
+          EOF
+          )"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
