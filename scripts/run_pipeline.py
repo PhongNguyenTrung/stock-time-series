@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Main pipeline: collect → preprocess → split → upload.
+"""Main pipeline: collect → clean → features → split → upload.
 
 Usage:
   python scripts/run_pipeline.py                  # full run (Drive + Sheets if configured)
@@ -18,8 +18,9 @@ from pathlib import Path
 # Allow imports from repo root
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from src.clean import clean_all
 from src.collect import collect_all
-from src.preprocess import preprocess_all
+from src.features import featurize_all
 from src.split import split_all
 from src.upload import upload
 
@@ -54,12 +55,13 @@ def main() -> None:
     log.info("Pipeline started")
 
     try:
-        collected = _step("1/4  collect", collect_all, force=args.force)
-        preprocessed = _step("2/4  preprocess", preprocess_all)
-        _step("3/4  split", split_all)
+        collected = _step("1/5  collect", collect_all, force=args.force)
+        cleaned = _step("2/5  clean (silver)", clean_all)
+        featured = _step("3/5  features (gold)", featurize_all)
+        _step("4/5  split", split_all)
 
         if args.skip_upload:
-            log.info("STEP: 4a/5  Drive upload — SKIPPED (--skip-upload)")
+            log.info("STEP: 5a/6  Drive upload — SKIPPED (--skip-upload)")
         else:
             ok = upload()
             if not ok:
@@ -69,11 +71,11 @@ def main() -> None:
         sheets_configured = bool(os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON"))
         if args.skip_sheets or not sheets_configured:
             reason = "--skip-sheets" if args.skip_sheets else "GOOGLE_SERVICE_ACCOUNT_JSON not set"
-            log.info("STEP: 4b/5  Sheets upload — SKIPPED (%s)", reason)
+            log.info("STEP: 5b/6  Sheets upload — SKIPPED (%s)", reason)
         else:
             from src.sheets import upload_to_sheets
 
-            ok = _step("4b/5  sheets", upload_to_sheets)
+            ok = _step("5b/6  sheets", upload_to_sheets)
             if not ok:
                 log.warning("Sheets upload failed — teammates may not see latest data")
 
@@ -81,14 +83,12 @@ def main() -> None:
         log.exception("Pipeline failed: %s", exc)
         sys.exit(1)
 
-    # Warn if any tickers failed during collect / preprocess
-    failed_collect = [t for t in ["VCB", "FPT", "HPG", "VIC", "VNM"] if t not in (collected or {})]
-    if failed_collect:
-        log.warning("Tickers not collected: %s", failed_collect)
-
-    failed_pre = [t for t in ["VCB", "FPT", "HPG", "VIC", "VNM"] if t not in (preprocessed or {})]
-    if failed_pre:
-        log.warning("Tickers not preprocessed: %s", failed_pre)
+    # Warn if any tickers failed at any layer.
+    tickers = ["VCB", "FPT", "HPG", "VIC", "VNM"]
+    for label, results in (("collected", collected), ("cleaned", cleaned), ("featured", featured)):
+        failed = [t for t in tickers if t not in (results or {})]
+        if failed:
+            log.warning("Tickers not %s: %s", label, failed)
 
     log.info("Pipeline complete in %.1fs", time.time() - t_total)
 

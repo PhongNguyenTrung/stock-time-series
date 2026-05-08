@@ -32,8 +32,9 @@ Results are pushed to **Google Sheets** — teammates open the link to get the l
 
 ```
 GitHub Actions (cron Mon–Fri 16:00 ICT)
-    ↓  collect via yfinance (.VN)
-    ↓  preprocess + feature engineering
+    ↓  collect via yfinance (.VN)            → data/raw/             (bronze)
+    ↓  clean OHLCV gaps + dedup              → data/processed/cleaned/   (silver)
+    ↓  technical indicators (MA/RSI/MACD/BB) → data/processed/featured/  (gold)
     ↓  train/test split (70/30 and 80/20)
     ↓  walk-forward 5-fold benchmark (Linear Regression baseline)
     ↓  re-execute notebook 01 → refresh predictions in docs/data/
@@ -141,10 +142,11 @@ flowchart TD
 
 | Step | Module | Output |
 |------|--------|--------|
-| 1 · Collect | `src/collect.py` | `data/raw/<TICKER>.csv` |
-| 2 · Preprocess | `src/preprocess.py` | `data/processed/featured/<TICKER>_featured.csv` |
-| 3 · Split | `src/split.py` | `data/processed/splits/{70_30,80_20}/<TICKER>_{train,test}.csv` |
-| 4 · Upload | `src/sheets.py` | Google Sheets (production only) |
+| 1 · Collect (bronze) | `src/collect.py` | `data/raw/<TICKER>.csv` |
+| 2 · Clean (silver) | `src/clean.py` | `data/processed/cleaned/<TICKER>.csv` |
+| 3 · Features (gold) | `src/features.py` | `data/processed/featured/<TICKER>_featured.csv` |
+| 4 · Split | `src/split.py` | `data/processed/splits/{70_30,80_20}/<TICKER>_{train,test}.csv` |
+| 5 · Upload | `src/sheets.py` | Google Sheets (production only) |
 
 ---
 

@@ -1,6 +1,6 @@
 # 📈 02 — Technical Indicators
 
-Các chỉ báo kỹ thuật được tính từ OHLCV và dùng làm **feature** cho mô hình. Trong project này, feature engineering ở `src/preprocess.py` tạo ra các indicators sau.
+Các chỉ báo kỹ thuật được tính từ OHLCV và dùng làm **feature** cho mô hình. Trong project này, feature engineering ở `src/features.py` (gold layer, sau khi `src/clean.py` đã xử lý silver layer) tạo ra các indicators sau.
 
 ## 1. Moving Average (MA) — Đường trung bình động
 
