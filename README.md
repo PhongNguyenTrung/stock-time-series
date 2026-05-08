@@ -35,6 +35,10 @@ GitHub Actions (cron Mon–Fri 16:00 ICT)
     ↓  collect via yfinance (.VN)
     ↓  preprocess + feature engineering
     ↓  train/test split (70/30 and 80/20)
+    ↓  walk-forward 5-fold benchmark (Linear Regression baseline)
+    ↓  re-execute notebook 01 → refresh predictions in docs/data/
+    ↓  aggregate_results.py → registry.json + chapter5_*.csv
+    ↓  auto-commit docs/data/ + results/ → GitHub Pages auto-deploy
     ↓  upload → Google Sheets ✓
 ```
 

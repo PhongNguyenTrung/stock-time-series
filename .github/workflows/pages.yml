@@ -6,6 +6,12 @@ on:
     paths:
       - "docs/**"
   workflow_dispatch:
+  # Cron data_refresh dùng GITHUB_TOKEN để commit lại docs/data/ — push này
+  # KHÔNG kích hoạt nhánh `push` ở trên (GitHub anti-loop). Dùng workflow_run
+  # để pages tự deploy sau mỗi lần Data Refresh hoàn tất.
+  workflow_run:
+    workflows: ["Data Refresh"]
+    types: [completed]
 
 permissions:
   contents: read
