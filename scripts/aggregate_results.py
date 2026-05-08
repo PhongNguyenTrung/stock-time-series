@@ -18,8 +18,10 @@ Quy ước CSV đầu vào (mỗi thành viên export ra):
 """
 
 import argparse
+import json
 import logging
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -34,10 +36,14 @@ ROOT = Path(__file__).parent.parent
 RESULTS_DIR = ROOT / "results"
 OUT_DIR = RESULTS_DIR / "comparison"
 PLOTS_DIR = OUT_DIR / "plots"
+REGISTRY_PATH = RESULTS_DIR / "registry.json"
 
 TICKERS = ["VCB", "FPT", "HPG", "VIC", "VNM"]
-METRICS = ["RMSE", "MAE", "MAPE (%)", "R²"]
+CORE_METRICS = ["RMSE", "MAE", "MAPE (%)", "R²"]
+OPTIONAL_METRICS = ["Directional Accuracy (%)"]
+METRICS = CORE_METRICS  # plotting loop — kept for backward compat
 REQUIRED_COLS = {"Ticker", "Split", "Model", "RMSE", "MAE", "MAPE (%)", "R²"}
+WF_METRICS = CORE_METRICS + OPTIONAL_METRICS
 
 COLORS = [
     "#2563EB",
@@ -54,7 +60,10 @@ COLORS = [
 
 
 def collect_csvs() -> list[Path]:
-    """Tìm tất cả *_results.csv trong results/ (bỏ qua thư mục eda và comparison)."""
+    """Tìm tất cả *_results.csv trong results/ (bỏ qua thư mục eda và comparison).
+
+    Loại trừ *_walkforward.csv — đã có collect_walkforward_csvs() riêng.
+    """
     skip = {"eda", "comparison"}
     paths = []
     for p in sorted(RESULTS_DIR.rglob("*_results.csv")):
@@ -63,8 +72,24 @@ def collect_csvs() -> list[Path]:
     return paths
 
 
+def collect_walkforward_csvs() -> list[Path]:
+    """Tìm tất cả *_walkforward.csv (per-fold output từ scripts/walkforward_eval.py)."""
+    skip = {"eda", "comparison"}
+    paths = []
+    for p in sorted(RESULTS_DIR.rglob("*_walkforward.csv")):
+        if p.name.endswith("_walkforward_summary.csv"):
+            continue
+        if p.parts[len(RESULTS_DIR.parts)] not in skip:
+            paths.append(p)
+    return paths
+
+
 def load_all(csv_paths: list[Path]) -> pd.DataFrame:
-    """Load và merge tất cả CSV kết quả, kiểm tra định dạng."""
+    """Load và merge tất cả CSV kết quả, kiểm tra định dạng.
+
+    Cột bắt buộc: REQUIRED_COLS. Cột tùy chọn (giữ nếu có, NaN nếu thiếu):
+    OPTIONAL_METRICS — ví dụ "Directional Accuracy (%)".
+    """
     frames = []
     for path in csv_paths:
         try:
@@ -73,12 +98,19 @@ def load_all(csv_paths: list[Path]) -> pd.DataFrame:
             if missing:
                 log.warning("Bỏ qua %s — thiếu cột: %s", path.name, missing)
                 continue
-            frames.append(df[list(REQUIRED_COLS)])
+            keep = list(REQUIRED_COLS) + [c for c in OPTIONAL_METRICS if c in df.columns]
+            sub = df[keep].copy()
+            for m in OPTIONAL_METRICS:
+                if m not in sub.columns:
+                    sub[m] = np.nan
+            frames.append(sub)
+            extras = [c for c in OPTIONAL_METRICS if c in df.columns]
             log.info(
-                "  Loaded: %s  (%d rows, models: %s)",
+                "  Loaded: %s  (%d rows, models: %s%s)",
                 path.name,
                 len(df),
                 df["Model"].unique().tolist(),
+                f", +{extras}" if extras else "",
             )
         except Exception as exc:
             log.warning("Không đọc được %s: %s", path.name, exc)
@@ -90,6 +122,129 @@ def load_all(csv_paths: list[Path]) -> pd.DataFrame:
     combined = pd.concat(frames, ignore_index=True)
     combined = combined.drop_duplicates(subset=["Ticker", "Split", "Model"])
     return combined
+
+
+def load_walkforward(csv_paths: list[Path]) -> pd.DataFrame | None:
+    """Load và gom các *_walkforward.csv (per-fold). Trả về None nếu không có."""
+    if not csv_paths:
+        return None
+    frames: list[pd.DataFrame] = []
+    for path in csv_paths:
+        try:
+            df = pd.read_csv(path)
+            need = {"Ticker", "Model", "Fold", "RMSE", "MAE"}
+            missing = need - set(df.columns)
+            if missing:
+                log.warning("Bỏ qua walk-forward %s — thiếu cột: %s", path.name, missing)
+                continue
+            for m in OPTIONAL_METRICS:
+                if m not in df.columns:
+                    df[m] = np.nan
+            frames.append(df)
+            log.info(
+                "  Loaded walk-forward: %s  (%d rows × %d folds, models: %s)",
+                path.name,
+                len(df),
+                df["Fold"].nunique(),
+                df["Model"].unique().tolist(),
+            )
+        except Exception as exc:
+            log.warning("Không đọc được %s: %s", path.name, exc)
+    if not frames:
+        return None
+    return pd.concat(frames, ignore_index=True)
+
+
+def summarise_walkforward(per_fold: pd.DataFrame) -> pd.DataFrame:
+    """Mean ± std của metrics qua các fold, gom theo (Ticker, Model)."""
+    metrics = [m for m in WF_METRICS if m in per_fold.columns]
+    agg = per_fold.groupby(["Ticker", "Model"], as_index=False).agg(
+        **{f"{m}_mean": (m, "mean") for m in metrics},
+        **{f"{m}_std": (m, "std") for m in metrics},
+        Folds=("Fold", "count"),
+    )
+    return agg.round(4)
+
+
+def update_registry(df: pd.DataFrame) -> dict:
+    """Cập nhật results/registry.json với champion mỗi (Ticker, Split).
+
+    Champion = model RMSE thấp nhất. Mỗi lần aggregate chạy:
+      - Nếu (Ticker, Split) chưa có champion → ghi "initial"
+      - Nếu champion model thay đổi → ghi "promote"
+      - Nếu cùng model nhưng RMSE đổi (retrain) → ghi "retrain"
+      - Không thay đổi gì → bỏ qua
+    """
+    registry: dict = {"champions": {}, "history": []}
+    if REGISTRY_PATH.exists():
+        try:
+            registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+            registry.setdefault("champions", {})
+            registry.setdefault("history", [])
+        except Exception as exc:
+            log.warning("registry.json không đọc được, tạo mới: %s", exc)
+
+    timestamp = datetime.now().isoformat(timespec="seconds")
+    best_idx = df.groupby(["Ticker", "Split"])["RMSE"].idxmin()
+    new_champs = df.loc[best_idx]
+
+    for _, row in new_champs.iterrows():
+        key = f"{row['Ticker']}__{row['Split']}"
+        entry = {
+            "ticker": row["Ticker"],
+            "split": row["Split"],
+            "model": row["Model"],
+            "rmse": float(row["RMSE"]),
+            "mae": float(row["MAE"]),
+            "since": timestamp,
+        }
+        da_col = "Directional Accuracy (%)"
+        if da_col in row and pd.notna(row[da_col]):
+            entry["directional_accuracy_pct"] = float(row[da_col])
+
+        prev = registry["champions"].get(key)
+        if prev is None:
+            registry["champions"][key] = entry
+            registry["history"].append(
+                {
+                    "timestamp": timestamp,
+                    "ticker": row["Ticker"],
+                    "split": row["Split"],
+                    "event": "initial",
+                    "model": row["Model"],
+                    "rmse": float(row["RMSE"]),
+                }
+            )
+        elif prev["model"] != row["Model"]:
+            registry["champions"][key] = entry
+            registry["history"].append(
+                {
+                    "timestamp": timestamp,
+                    "ticker": row["Ticker"],
+                    "split": row["Split"],
+                    "event": "promote",
+                    "from_model": prev["model"],
+                    "to_model": row["Model"],
+                    "rmse_improvement": round(prev["rmse"] - float(row["RMSE"]), 4),
+                }
+            )
+        elif abs(prev.get("rmse", float("inf")) - float(row["RMSE"])) > 1e-6:
+            registry["champions"][key] = {**entry, "since": prev.get("since", timestamp)}
+            registry["history"].append(
+                {
+                    "timestamp": timestamp,
+                    "ticker": row["Ticker"],
+                    "split": row["Split"],
+                    "event": "retrain",
+                    "model": row["Model"],
+                    "rmse": float(row["RMSE"]),
+                    "previous_rmse": prev["rmse"],
+                }
+            )
+
+    registry["updated_at"] = timestamp
+    REGISTRY_PATH.write_text(json.dumps(registry, indent=2, ensure_ascii=False), encoding="utf-8")
+    return registry
 
 
 def rank_models(df: pd.DataFrame) -> pd.DataFrame:
@@ -272,11 +427,10 @@ def main() -> None:
 
     # ── 2. Bảng tổng hợp ──
     print_section("2. Bảng tổng hợp")
-    full_table = (
-        df.sort_values(["Split", "Ticker", "RMSE"])
-        .round({"RMSE": 2, "MAE": 2, "MAPE (%)": 3, "R²": 4})
-        .reset_index(drop=True)
-    )
+    rounding = {"RMSE": 2, "MAE": 2, "MAPE (%)": 3, "R²": 4}
+    if "Directional Accuracy (%)" in df.columns:
+        rounding["Directional Accuracy (%)"] = 2
+    full_table = df.sort_values(["Split", "Ticker", "RMSE"]).round(rounding).reset_index(drop=True)
     out_csv = OUT_DIR / "chapter5_comparison.csv"
     full_table.to_csv(out_csv, index=False, encoding="utf-8-sig")
     log.info("  Saved → %s", out_csv.relative_to(ROOT))
@@ -310,16 +464,53 @@ def main() -> None:
 
     # ── 5. Tóm tắt kết quả tốt nhất ──
     print_section("5. Model tốt nhất theo RMSE (mỗi mã, mỗi split)")
+    best_cols = ["Ticker", "Split", "Model", "RMSE", "MAE", "R²"]
+    if "Directional Accuracy (%)" in df.columns:
+        best_cols.append("Directional Accuracy (%)")
     best = (
-        df.loc[df.groupby(["Ticker", "Split"])["RMSE"].idxmin()][
-            ["Ticker", "Split", "Model", "RMSE", "MAE", "R²"]
-        ]
+        df.loc[df.groupby(["Ticker", "Split"])["RMSE"].idxmin()][best_cols]
         .sort_values(["Split", "Ticker"])
-        .round({"RMSE": 2, "MAE": 2, "R²": 4})
+        .round({"RMSE": 2, "MAE": 2, "R²": 4, "Directional Accuracy (%)": 2})
         .reset_index(drop=True)
     )
     print(best.to_string(index=False))
     best.to_csv(OUT_DIR / "chapter5_best_models.csv", index=False, encoding="utf-8-sig")
+
+    # ── 6. Walk-forward summary (nếu có) ──
+    print_section("6. Walk-forward (5-fold TimeSeriesSplit)")
+    wf_paths = collect_walkforward_csvs()
+    if not wf_paths:
+        log.info("  Không tìm thấy *_walkforward.csv — bỏ qua.")
+        log.info("  (Chạy: python scripts/walkforward_eval.py để tạo cho Linear Regression)")
+    else:
+        wf = load_walkforward(wf_paths)
+        if wf is not None and not wf.empty:
+            wf_per_fold = OUT_DIR / "chapter5_walkforward_per_fold.csv"
+            wf.to_csv(wf_per_fold, index=False, encoding="utf-8-sig")
+            log.info("  Saved per-fold → %s", wf_per_fold.relative_to(ROOT))
+
+            wf_summary = summarise_walkforward(wf)
+            wf_sum_path = OUT_DIR / "chapter5_walkforward_summary.csv"
+            wf_summary.to_csv(wf_sum_path, index=False, encoding="utf-8-sig")
+            log.info("  Saved summary → %s", wf_sum_path.relative_to(ROOT))
+            print(wf_summary.to_string(index=False))
+
+    # ── 7. Model registry (champion / history) ──
+    print_section("7. Model registry — champion theo RMSE")
+    registry = update_registry(df)
+    log.info("  Champions: %d entries", len(registry["champions"]))
+    log.info("  History: %d events", len(registry["history"]))
+    log.info("  Saved → %s", REGISTRY_PATH.relative_to(ROOT))
+    for key, champ in sorted(registry["champions"].items()):
+        da = champ.get("directional_accuracy_pct")
+        da_str = f"  DA={da:.1f}%" if da is not None else ""
+        log.info(
+            "    %-20s → %-22s RMSE=%.3f%s",
+            key,
+            champ["model"],
+            champ["rmse"],
+            da_str,
+        )
 
     log.info("─" * 55)
     log.info("  Hoàn thành. Kết quả tại: %s", OUT_DIR.relative_to(ROOT))

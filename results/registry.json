@@ -1,0 +1,167 @@
+{
+  "champions": {
+    "FPT__70_30": {
+      "ticker": "FPT",
+      "split": "70_30",
+      "model": "Linear Regression",
+      "rmse": 1.63,
+      "mae": 1.14,
+      "since": "2026-05-08T22:03:30"
+    },
+    "FPT__80_20": {
+      "ticker": "FPT",
+      "split": "80_20",
+      "model": "Linear Regression",
+      "rmse": 1.9,
+      "mae": 1.41,
+      "since": "2026-05-08T22:03:30"
+    },
+    "HPG__70_30": {
+      "ticker": "HPG",
+      "split": "70_30",
+      "model": "Linear Regression",
+      "rmse": 0.4,
+      "mae": 0.28,
+      "since": "2026-05-08T22:03:30"
+    },
+    "HPG__80_20": {
+      "ticker": "HPG",
+      "split": "80_20",
+      "model": "Linear Regression",
+      "rmse": 0.42,
+      "mae": 0.29,
+      "since": "2026-05-08T22:03:30"
+    },
+    "VCB__70_30": {
+      "ticker": "VCB",
+      "split": "70_30",
+      "model": "Linear Regression",
+      "rmse": 0.89,
+      "mae": 0.6,
+      "since": "2026-05-08T22:03:30"
+    },
+    "VCB__80_20": {
+      "ticker": "VCB",
+      "split": "80_20",
+      "model": "Linear Regression",
+      "rmse": 0.95,
+      "mae": 0.61,
+      "since": "2026-05-08T22:03:30"
+    },
+    "VIC__70_30": {
+      "ticker": "VIC",
+      "split": "70_30",
+      "model": "Linear Regression",
+      "rmse": 2.51,
+      "mae": 1.15,
+      "since": "2026-05-08T22:03:30"
+    },
+    "VIC__80_20": {
+      "ticker": "VIC",
+      "split": "80_20",
+      "model": "Linear Regression",
+      "rmse": 3.05,
+      "mae": 1.56,
+      "since": "2026-05-08T22:03:30"
+    },
+    "VNM__70_30": {
+      "ticker": "VNM",
+      "split": "70_30",
+      "model": "Linear Regression",
+      "rmse": 0.89,
+      "mae": 0.61,
+      "since": "2026-05-08T22:03:30"
+    },
+    "VNM__80_20": {
+      "ticker": "VNM",
+      "split": "80_20",
+      "model": "Linear Regression",
+      "rmse": 0.98,
+      "mae": 0.65,
+      "since": "2026-05-08T22:03:30"
+    }
+  },
+  "history": [
+    {
+      "timestamp": "2026-05-08T22:03:30",
+      "ticker": "FPT",
+      "split": "70_30",
+      "event": "initial",
+      "model": "Linear Regression",
+      "rmse": 1.63
+    },
+    {
+      "timestamp": "2026-05-08T22:03:30",
+      "ticker": "FPT",
+      "split": "80_20",
+      "event": "initial",
+      "model": "Linear Regression",
+      "rmse": 1.9
+    },
+    {
+      "timestamp": "2026-05-08T22:03:30",
+      "ticker": "HPG",
+      "split": "70_30",
+      "event": "initial",
+      "model": "Linear Regression",
+      "rmse": 0.4
+    },
+    {
+      "timestamp": "2026-05-08T22:03:30",
+      "ticker": "HPG",
+      "split": "80_20",
+      "event": "initial",
+      "model": "Linear Regression",
+      "rmse": 0.42
+    },
+    {
+      "timestamp": "2026-05-08T22:03:30",
+      "ticker": "VCB",
+      "split": "70_30",
+      "event": "initial",
+      "model": "Linear Regression",
+      "rmse": 0.89
+    },
+    {
+      "timestamp": "2026-05-08T22:03:30",
+      "ticker": "VCB",
+      "split": "80_20",
+      "event": "initial",
+      "model": "Linear Regression",
+      "rmse": 0.95
+    },
+    {
+      "timestamp": "2026-05-08T22:03:30",
+      "ticker": "VIC",
+      "split": "70_30",
+      "event": "initial",
+      "model": "Linear Regression",
+      "rmse": 2.51
+    },
+    {
+      "timestamp": "2026-05-08T22:03:30",
+      "ticker": "VIC",
+      "split": "80_20",
+      "event": "initial",
+      "model": "Linear Regression",
+      "rmse": 3.05
+    },
+    {
+      "timestamp": "2026-05-08T22:03:30",
+      "ticker": "VNM",
+      "split": "70_30",
+      "event": "initial",
+      "model": "Linear Regression",
+      "rmse": 0.89
+    },
+    {
+      "timestamp": "2026-05-08T22:03:30",
+      "ticker": "VNM",
+      "split": "80_20",
+      "event": "initial",
+      "model": "Linear Regression",
+      "rmse": 0.98
+    }
+  ],
+  "updated_at": "2026-05-08T22:06:03"
+}

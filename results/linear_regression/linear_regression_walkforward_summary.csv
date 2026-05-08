@@ -1,0 +1,6 @@
+﻿Ticker,Model,RMSE_mean,MAE_mean,MAPE (%)_mean,R²_mean,Directional Accuracy (%)_mean,RMSE_std,MAE_std,MAPE (%)_std,R²_std,Directional Accuracy (%)_std,Folds
+FPT,Linear Regression,0.8999,0.6337,1.2414,0.9808,50.828,0.6818,0.4991,0.1329,0.0139,1.5049,5
+HPG,Linear Regression,0.3532,0.2525,1.5233,0.9865,52.398,0.1493,0.1094,0.1847,0.0074,3.8204,5
+VCB,Linear Regression,0.7469,0.5177,1.2541,0.9539,48.554,0.1644,0.0928,0.2791,0.0376,1.4944,5
+VIC,Linear Regression,1.284,0.7677,1.468,0.9864,47.556,1.1529,0.5933,0.3736,0.0095,3.1009,5
+VNM,Linear Regression,1.0613,0.7526,1.0958,0.9652,49.408,0.202,0.1365,0.0977,0.0166,1.9481,5

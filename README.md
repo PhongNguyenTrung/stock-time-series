@@ -182,11 +182,22 @@ Columns in each `*_train.csv` / `*_test.csv` file:
 3. Run the notebook — results are saved automatically to `results/<model_name>/`
 4. Send `results/<model_name>/<model_name>_results.csv` to Member 1
 
-Required CSV format:
+Required CSV format (optional column `Directional Accuracy (%)` is supported):
 ```
-Ticker,Split,Model,RMSE,MAE,MAPE (%),R²
-VCB,70_30,LSTM,0.85,0.60,1.02,0.96
+Ticker,Split,Model,RMSE,MAE,MAPE (%),R²,Directional Accuracy (%)
+VCB,70_30,LSTM,0.85,0.60,1.02,0.96,54.3
 ...
+```
+
+To keep metric formulas identical across all 6 models, use the shared helper:
+
+```python
+from src.metrics import compute_metrics
+
+# y_true, y_pred:  next-day close (test set, in original price space)
+# prev_close:      same-day close (used for Directional Accuracy)
+m = compute_metrics(y_true, y_pred, prev_close=prev_close)
+rows.append({"Ticker": "VCB", "Split": "70_30", "Model": MODEL_NAME, **m})
 ```
 
 ### Aggregating results (Member 1 — Chapter 5)
@@ -197,8 +208,32 @@ Once all members have submitted their CSV files:
 python scripts/aggregate_results.py
 # → results/comparison/chapter5_comparison.csv
 # → results/comparison/chapter5_pivot_rmse_*.csv
+# → results/comparison/chapter5_walkforward_summary.csv  (if any *_walkforward.csv exist)
 # → results/comparison/plots/
+# → results/registry.json                                ← champion model + promotion history
 ```
+
+### Walk-forward evaluation (Linear Regression baseline)
+
+In addition to the 70/30 and 80/20 single splits, run a 5-fold expanding-window
+`TimeSeriesSplit` benchmark — the academic standard for time-series CV:
+
+```bash
+python scripts/walkforward_eval.py
+# → results/linear_regression/linear_regression_walkforward.csv          (per fold)
+# → results/linear_regression/linear_regression_walkforward_summary.csv  (mean ± std)
+```
+
+The aggregator picks any `*_walkforward.csv` it finds under `results/`, so other
+members can drop in their own walk-forward CSVs and they will be summarised in
+`chapter5_walkforward_summary.csv`.
+
+### Model registry — champion / promotion history
+
+`results/registry.json` records the lowest-RMSE model per (Ticker, Split) and a
+chronological log of promotion events. Updated automatically each time
+`aggregate_results.py` runs. Useful for the "model evolution" narrative in
+Chapter 5–6 of the report.
 
 ---
 

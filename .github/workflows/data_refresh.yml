@@ -41,6 +41,12 @@ jobs:
           fi
           python scripts/run_pipeline.py --skip-upload --skip-sheets $FORCE_FLAG
 
+      # Walk-forward 5-fold benchmark cho Linear Regression baseline.
+      # continue-on-error: walk-forward không phải critical path — fail không block sheets upload.
+      - name: Walk-forward evaluation (Linear Regression baseline)
+        continue-on-error: true
+        run: python scripts/walkforward_eval.py
+
       # ── Google Sheets upload (production) ────────────────────────────────
       # Kích hoạt khi 2 secrets được cấu hình:
       #   GOOGLE_SERVICE_ACCOUNT_JSON  ← nội dung JSON key của service account
@@ -60,3 +66,19 @@ jobs:
           echo ""
           echo "=== Số dòng raw data ==="
           wc -l data/raw/*.csv 2>/dev/null || echo "(không có file)"
+          echo ""
+          echo "=== Walk-forward summary (nếu có) ==="
+          cat results/linear_regression/linear_regression_walkforward_summary.csv 2>/dev/null || echo "(không có file)"
+
+      # Upload artifact để debug khi cần — retain 30 ngày, đủ trace lại 1 tháng dữ liệu.
+      - name: Upload processed data + results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stock-data-${{ github.run_id }}
+          path: |
+            data/processed/
+            results/linear_regression/linear_regression_walkforward.csv
+            results/linear_regression/linear_regression_walkforward_summary.csv
+          retention-days: 30
+          if-no-files-found: warn
