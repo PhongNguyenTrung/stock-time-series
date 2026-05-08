@@ -4,17 +4,19 @@
       "ticker": "FPT",
       "split": "70_30",
       "model": "Linear Regression",
-      "rmse": 1.63,
+      "rmse": 1.64,
       "mae": 1.14,
-      "since": "2026-05-08T22:03:30"
+      "since": "2026-05-08T22:03:30",
+      "directional_accuracy_pct": 54.44
     },
     "FPT__80_20": {
       "ticker": "FPT",
       "split": "80_20",
       "model": "Linear Regression",
-      "rmse": 1.9,
-      "mae": 1.41,
-      "since": "2026-05-08T22:03:30"
+      "rmse": 1.89,
+      "mae": 1.4,
+      "since": "2026-05-08T22:03:30",
+      "directional_accuracy_pct": 53.09
     },
     "HPG__70_30": {
       "ticker": "HPG",
@@ -52,9 +54,10 @@
       "ticker": "VIC",
       "split": "70_30",
       "model": "Linear Regression",
-      "rmse": 2.51,
-      "mae": 1.15,
-      "since": "2026-05-08T22:03:30"
+      "rmse": 2.52,
+      "mae": 1.16,
+      "since": "2026-05-08T22:03:30",
+      "directional_accuracy_pct": 50.56
     },
     "VIC__80_20": {
       "ticker": "VIC",
@@ -76,9 +79,10 @@
       "ticker": "VNM",
       "split": "80_20",
       "model": "Linear Regression",
-      "rmse": 0.98,
+      "rmse": 0.97,
       "mae": 0.65,
-      "since": "2026-05-08T22:03:30"
+      "since": "2026-05-08T22:03:30",
+      "directional_accuracy_pct": 52.74
     }
   },
   "history": [
@@ -161,7 +165,43 @@
       "event": "initial",
       "model": "Linear Regression",
       "rmse": 0.98
+    },
+    {
+      "timestamp": "2026-05-08T15:52:22",
+      "ticker": "FPT",
+      "split": "70_30",
+      "event": "retrain",
+      "model": "Linear Regression",
+      "rmse": 1.64,
+      "previous_rmse": 1.63
+    },
+    {
+      "timestamp": "2026-05-08T15:52:22",
+      "ticker": "FPT",
+      "split": "80_20",
+      "event": "retrain",
+      "model": "Linear Regression",
+      "rmse": 1.89,
+      "previous_rmse": 1.9
+    },
+    {
+      "timestamp": "2026-05-08T15:52:22",
+      "ticker": "VIC",
+      "split": "70_30",
+      "event": "retrain",
+      "model": "Linear Regression",
+      "rmse": 2.52,
+      "previous_rmse": 2.51
+    },
+    {
+      "timestamp": "2026-05-08T15:52:22",
+      "ticker": "VNM",
+      "split": "80_20",
+      "event": "retrain",
+      "model": "Linear Regression",
+      "rmse": 0.97,
+      "previous_rmse": 0.98
     }
   ],
-  "updated_at": "2026-05-08T22:41:23"
+  "updated_at": "2026-05-08T15:52:22"
 }
