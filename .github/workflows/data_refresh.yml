@@ -11,6 +11,11 @@ on:
         required: false
         default: false
         type: boolean
+      force_fail:
+        description: "Force fail (test Google Chat notification)"
+        required: false
+        default: false
+        type: boolean
 
   schedule:
     - cron: "0 9 * * 1-5"   # Thứ 2–6, 09:00 UTC = 16:00 CH giờ VN (sau đóng cửa)
@@ -26,6 +31,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+
+      # Debug helper — chỉ chạy khi workflow_dispatch input force_fail=true.
+      # Mục đích duy nhất: trigger notification step để verify webhook hoạt động.
+      - name: Force fail (notification test)
+        if: ${{ github.event.inputs.force_fail == 'true' }}
+        run: |
+          echo "force_fail=true → intentionally failing to test Google Chat webhook"
+          exit 1
 
       - uses: actions/setup-python@v6
         with:
