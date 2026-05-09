@@ -39,8 +39,9 @@
       "split": "70_30",
       "model": "Linear Regression",
       "rmse": 0.89,
-      "mae": 0.6,
-      "since": "2026-05-08T22:03:30"
+      "mae": 0.59,
+      "since": "2026-05-08T22:03:30",
+      "directional_accuracy_pct": 50.21
     },
     "VCB__80_20": {
       "ticker": "VCB",
@@ -203,5 +204,5 @@
       "previous_rmse": 0.98
     }
   ],
-  "updated_at": "2026-05-08T15:52:22"
+  "updated_at": "2026-05-09T09:26:26"
 }

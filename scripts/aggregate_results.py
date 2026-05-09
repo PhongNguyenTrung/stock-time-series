@@ -45,6 +45,9 @@ METRICS = CORE_METRICS  # plotting loop — kept for backward compat
 REQUIRED_COLS = {"Ticker", "Split", "Model", "RMSE", "MAE", "MAPE (%)", "R²"}
 WF_METRICS = CORE_METRICS + OPTIONAL_METRICS
 
+# RMSE tăng > 20% so với champion trước = regression event (alert, không block).
+REGRESSION_THRESHOLD = 0.20
+
 COLORS = [
     "#2563EB",
     "#DC2626",
@@ -203,6 +206,8 @@ def update_registry(df: pd.DataFrame) -> dict:
             entry["directional_accuracy_pct"] = float(row[da_col])
 
         prev = registry["champions"].get(key)
+        new_rmse = float(row["RMSE"])
+
         if prev is None:
             registry["champions"][key] = entry
             registry["history"].append(
@@ -212,33 +217,65 @@ def update_registry(df: pd.DataFrame) -> dict:
                     "split": row["Split"],
                     "event": "initial",
                     "model": row["Model"],
-                    "rmse": float(row["RMSE"]),
+                    "rmse": new_rmse,
                 }
             )
-        elif prev["model"] != row["Model"]:
+            continue
+
+        prev_rmse = float(prev.get("rmse", new_rmse))
+        delta_pct = (new_rmse - prev_rmse) / prev_rmse if prev_rmse > 0 else 0.0
+        is_regression = delta_pct > REGRESSION_THRESHOLD
+
+        if prev["model"] != row["Model"]:
+            event = "regression_detected" if is_regression else "promote"
+            if is_regression:
+                log.warning(
+                    "REGRESSION: %s %s — %s replaces %s with RMSE %.3f (was %.3f, +%.0f%%)",
+                    row["Ticker"],
+                    row["Split"],
+                    row["Model"],
+                    prev["model"],
+                    new_rmse,
+                    prev_rmse,
+                    delta_pct * 100,
+                )
             registry["champions"][key] = entry
             registry["history"].append(
                 {
                     "timestamp": timestamp,
                     "ticker": row["Ticker"],
                     "split": row["Split"],
-                    "event": "promote",
+                    "event": event,
                     "from_model": prev["model"],
                     "to_model": row["Model"],
-                    "rmse_improvement": round(prev["rmse"] - float(row["RMSE"]), 4),
+                    "rmse_change_pct": round(delta_pct * 100, 2),
+                    "rmse_improvement": round(prev_rmse - new_rmse, 4),
                 }
             )
-        elif abs(prev.get("rmse", float("inf")) - float(row["RMSE"])) > 1e-6:
+        elif abs(prev_rmse - new_rmse) > 1e-6:
+            event = "regression_detected" if is_regression else "retrain"
+            if is_regression:
+                log.warning(
+                    "REGRESSION: %s %s — %s RMSE %.3f → %.3f (+%.0f%%)",
+                    row["Ticker"],
+                    row["Split"],
+                    row["Model"],
+                    prev_rmse,
+                    new_rmse,
+                    delta_pct * 100,
+                )
+            # Giữ "since" cũ (champion vẫn là cùng model) trừ khi regression đã thay đổi entry.
             registry["champions"][key] = {**entry, "since": prev.get("since", timestamp)}
             registry["history"].append(
                 {
                     "timestamp": timestamp,
                     "ticker": row["Ticker"],
                     "split": row["Split"],
-                    "event": "retrain",
+                    "event": event,
                     "model": row["Model"],
-                    "rmse": float(row["RMSE"]),
-                    "previous_rmse": prev["rmse"],
+                    "rmse": new_rmse,
+                    "previous_rmse": prev_rmse,
+                    "rmse_change_pct": round(delta_pct * 100, 2),
                 }
             )
 

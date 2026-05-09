@@ -36,12 +36,19 @@ GitHub Actions (cron Mon–Fri 16:00 ICT)
     ↓  clean OHLCV gaps + dedup              → data/processed/cleaned/   (silver)
     ↓  technical indicators (MA/RSI/MACD/BB) → data/processed/featured/  (gold)
     ↓  train/test split (70/30 and 80/20)
+    ↓  validate splits (schema, row count, monotonic dates) — fail-fast
     ↓  walk-forward 5-fold benchmark (Linear Regression baseline)
     ↓  re-execute notebook 01 → refresh predictions in docs/data/
     ↓  aggregate_results.py → registry.json + chapter5_*.csv
+    ↓     ↘ regression check: RMSE +20% vs champion → "regression_detected" event
     ↓  auto-commit docs/data/ + results/ → GitHub Pages auto-deploy
     ↓  upload → Google Sheets ✓
+    ↓  on failure → Discord/Slack webhook (NOTIFICATION_WEBHOOK_URL secret)
 ```
+
+**Optional secrets** (configure in GitHub repo → Settings → Secrets → Actions):
+- `GOOGLE_SERVICE_ACCOUNT_JSON`, `SHEETS_SPREADSHEET_ID` — Google Sheets upload
+- `NOTIFICATION_WEBHOOK_URL` — Discord or Slack incoming webhook for cron failure alerts
 
 > **Google Sheets link:** [stock-time-series data](https://docs.google.com/spreadsheets/d/1p7yWv51McAEHGJ7KyD4j8H1CDXwuVcUOGT-pVKxcM_Q/edit?usp=sharing)
 

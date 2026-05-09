@@ -23,6 +23,7 @@ from src.collect import collect_all
 from src.features import featurize_all
 from src.split import split_all
 from src.upload import upload
+from src.validate import validate_all
 
 logging.basicConfig(
     level=logging.INFO,
@@ -59,6 +60,11 @@ def main() -> None:
         cleaned = _step("2/5  clean (silver)", clean_all)
         featured = _step("3/5  features (gold)", featurize_all)
         _step("4/5  split", split_all)
+
+        # Validate splits — fail-fast before anything reaches Sheets/Pages.
+        if validate_all() != 0:
+            log.error("Validation failed — aborting before upload steps")
+            sys.exit(1)
 
         if args.skip_upload:
             log.info("STEP: 5a/6  Drive upload — SKIPPED (--skip-upload)")

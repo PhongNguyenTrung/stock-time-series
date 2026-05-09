@@ -115,3 +115,22 @@ jobs:
             results/linear_regression/linear_regression_walkforward_summary.csv
           retention-days: 30
           if-no-files-found: warn
+
+      # Webhook notification on failure — phát hiện cron rớt trong giờ thay vì
+      # phải mở Actions tab tay. Set NOTIFICATION_WEBHOOK_URL trong repo secrets
+      # (Discord webhook URL hoặc Slack incoming webhook URL — payload tương thích cả hai).
+      - name: Notify on failure (Discord/Slack webhook)
+        if: failure()
+        env:
+          WEBHOOK_URL: ${{ secrets.NOTIFICATION_WEBHOOK_URL }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "NOTIFICATION_WEBHOOK_URL not set — skipping notification."
+            exit 0
+          fi
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          MSG="🔴 Data Refresh failed on $(date -u +%Y-%m-%d) — $RUN_URL"
+          # Discord uses 'content', Slack uses 'text' — gửi cả hai để compatible.
+          curl -fsS -X POST -H "Content-Type: application/json" \
+            -d "{\"content\":\"$MSG\",\"text\":\"$MSG\"}" \
+            "$WEBHOOK_URL"
