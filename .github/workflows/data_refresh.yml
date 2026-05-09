@@ -143,9 +143,11 @@ jobs:
             exit 0
           fi
           RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          TIMESTAMP="$(date -u '+%Y-%m-%d %H:%M UTC')"
+          # printf để \n thành real newline (Google Chat render line break trong field text).
           # Google Chat hỗ trợ basic markdown: *bold*, _italic_, `code`, ~strike~.
-          # \n trong JSON string sẽ render thành line break trong message.
-          MSG="🔴 *Data Refresh failed* — $(date -u +%Y-%m-%d %H:%M\ UTC)\nRepo: ${{ github.repository }}\nRun: $RUN_URL"
+          MSG=$(printf '🔴 *Data Refresh failed* — %s\nRepo: %s\nRun: %s' \
+            "$TIMESTAMP" "${{ github.repository }}" "$RUN_URL")
           curl -fsS -X POST -H "Content-Type: application/json; charset=UTF-8" \
             -d "$(jq -n --arg text "$MSG" '{text: $text}')" \
             "$WEBHOOK_URL"
