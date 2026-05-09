@@ -43,12 +43,13 @@ GitHub Actions (cron Mon–Fri 16:00 ICT)
     ↓     ↘ regression check: RMSE +20% vs champion → "regression_detected" event
     ↓  auto-commit docs/data/ + results/ → GitHub Pages auto-deploy
     ↓  upload → Google Sheets ✓
-    ↓  on failure → Discord/Slack webhook (NOTIFICATION_WEBHOOK_URL secret)
+    ↓  on failure → Google Chat webhook (GOOGLE_CHAT_WEBHOOK_URL secret)
 ```
 
 **Optional secrets** (configure in GitHub repo → Settings → Secrets → Actions):
 - `GOOGLE_SERVICE_ACCOUNT_JSON`, `SHEETS_SPREADSHEET_ID` — Google Sheets upload
-- `NOTIFICATION_WEBHOOK_URL` — Discord or Slack incoming webhook for cron failure alerts
+- `GOOGLE_CHAT_WEBHOOK_URL` — Google Chat space webhook for cron failure alerts.
+  Get it from: target Space → ⋮ → *Apps & integrations* → *Manage webhooks* → *Add webhook*.
 
 > **Google Sheets link:** [stock-time-series data](https://docs.google.com/spreadsheets/d/1p7yWv51McAEHGJ7KyD4j8H1CDXwuVcUOGT-pVKxcM_Q/edit?usp=sharing)
 

@@ -116,21 +116,23 @@ jobs:
           retention-days: 30
           if-no-files-found: warn
 
-      # Webhook notification on failure — phát hiện cron rớt trong giờ thay vì
-      # phải mở Actions tab tay. Set NOTIFICATION_WEBHOOK_URL trong repo secrets
-      # (Discord webhook URL hoặc Slack incoming webhook URL — payload tương thích cả hai).
-      - name: Notify on failure (Discord/Slack webhook)
+      # Google Chat webhook notification on failure — phát hiện cron rớt trong
+      # giờ thay vì phải mở Actions tab tay. Set GOOGLE_CHAT_WEBHOOK_URL trong
+      # repo secrets (Space → Apps & integrations → Manage webhooks → Add).
+      # Format payload theo Google Chat API: https://developers.google.com/chat/api/guides/message-formats/basic
+      - name: Notify on failure (Google Chat webhook)
         if: failure()
         env:
-          WEBHOOK_URL: ${{ secrets.NOTIFICATION_WEBHOOK_URL }}
+          WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
         run: |
           if [ -z "$WEBHOOK_URL" ]; then
-            echo "NOTIFICATION_WEBHOOK_URL not set — skipping notification."
+            echo "GOOGLE_CHAT_WEBHOOK_URL not set — skipping notification."
             exit 0
           fi
           RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          MSG="🔴 Data Refresh failed on $(date -u +%Y-%m-%d) — $RUN_URL"
-          # Discord uses 'content', Slack uses 'text' — gửi cả hai để compatible.
-          curl -fsS -X POST -H "Content-Type: application/json" \
-            -d "{\"content\":\"$MSG\",\"text\":\"$MSG\"}" \
+          # Google Chat hỗ trợ basic markdown: *bold*, _italic_, `code`, ~strike~.
+          # \n trong JSON string sẽ render thành line break trong message.
+          MSG="🔴 *Data Refresh failed* — $(date -u +%Y-%m-%d %H:%M\ UTC)\nRepo: ${{ github.repository }}\nRun: $RUN_URL"
+          curl -fsS -X POST -H "Content-Type: application/json; charset=UTF-8" \
+            -d "$(jq -n --arg text "$MSG" '{text: $text}')" \
             "$WEBHOOK_URL"
