@@ -13,8 +13,8 @@
       "ticker": "FPT",
       "split": "80_20",
       "model": "Linear Regression",
-      "rmse": 1.89,
-      "mae": 1.4,
+      "rmse": 1.9,
+      "mae": 1.41,
       "since": "2026-05-08T22:03:30",
       "directional_accuracy_pct": 53.09
     },
@@ -22,17 +22,19 @@
       "ticker": "HPG",
       "split": "70_30",
       "model": "Linear Regression",
-      "rmse": 0.4,
-      "mae": 0.28,
-      "since": "2026-05-08T22:03:30"
+      "rmse": 0.39,
+      "mae": 0.27,
+      "since": "2026-05-08T22:03:30",
+      "directional_accuracy_pct": 50.27
     },
     "HPG__80_20": {
       "ticker": "HPG",
       "split": "80_20",
       "model": "Linear Regression",
-      "rmse": 0.42,
-      "mae": 0.29,
-      "since": "2026-05-08T22:03:30"
+      "rmse": 0.41,
+      "mae": 0.28,
+      "since": "2026-05-08T22:03:30",
+      "directional_accuracy_pct": 52.73
     },
     "VCB__70_30": {
       "ticker": "VCB",
@@ -202,7 +204,37 @@
       "model": "Linear Regression",
       "rmse": 0.97,
       "previous_rmse": 0.98
+    },
+    {
+      "timestamp": "2026-05-11T11:55:07",
+      "ticker": "FPT",
+      "split": "80_20",
+      "event": "retrain",
+      "model": "Linear Regression",
+      "rmse": 1.9,
+      "previous_rmse": 1.89,
+      "rmse_change_pct": 0.53
+    },
+    {
+      "timestamp": "2026-05-11T11:55:07",
+      "ticker": "HPG",
+      "split": "70_30",
+      "event": "retrain",
+      "model": "Linear Regression",
+      "rmse": 0.39,
+      "previous_rmse": 0.4,
+      "rmse_change_pct": -2.5
+    },
+    {
+      "timestamp": "2026-05-11T11:55:07",
+      "ticker": "HPG",
+      "split": "80_20",
+      "event": "retrain",
+      "model": "Linear Regression",
+      "rmse": 0.41,
+      "previous_rmse": 0.42,
+      "rmse_change_pct": -2.38
     }
   ],
-  "updated_at": "2026-05-09T02:39:22"
+  "updated_at": "2026-05-11T11:55:07"
 }
