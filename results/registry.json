@@ -40,7 +40,7 @@
       "ticker": "VCB",
       "split": "70_30",
       "model": "Linear Regression",
-      "rmse": 0.89,
+      "rmse": 0.9,
       "mae": 0.6,
       "since": "2026-05-08T22:03:30",
       "directional_accuracy_pct": 49.73
@@ -316,7 +316,17 @@
       "rmse": 3.11,
       "previous_rmse": 3.09,
       "rmse_change_pct": 0.65
+    },
+    {
+      "timestamp": "2026-05-22T11:37:40",
+      "ticker": "VCB",
+      "split": "70_30",
+      "event": "retrain",
+      "model": "Linear Regression",
+      "rmse": 0.9,
+      "previous_rmse": 0.89,
+      "rmse_change_pct": 1.12
     }
   ],
-  "updated_at": "2026-05-21T12:00:25"
+  "updated_at": "2026-05-22T11:37:40"
 }
