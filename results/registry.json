@@ -4,10 +4,10 @@
       "ticker": "FPT",
       "split": "70_30",
       "model": "Linear Regression",
-      "rmse": 1.64,
-      "mae": 1.14,
+      "rmse": 1.65,
+      "mae": 1.15,
       "since": "2026-05-08T22:03:30",
-      "directional_accuracy_pct": 54.44
+      "directional_accuracy_pct": 52.92
     },
     "FPT__80_20": {
       "ticker": "FPT",
@@ -22,19 +22,19 @@
       "ticker": "HPG",
       "split": "70_30",
       "model": "Linear Regression",
-      "rmse": 0.39,
-      "mae": 0.27,
+      "rmse": 0.35,
+      "mae": 0.25,
       "since": "2026-05-08T22:03:30",
-      "directional_accuracy_pct": 50.27
+      "directional_accuracy_pct": 49.93
     },
     "HPG__80_20": {
       "ticker": "HPG",
       "split": "80_20",
       "model": "Linear Regression",
-      "rmse": 0.41,
-      "mae": 0.28,
+      "rmse": 0.37,
+      "mae": 0.26,
       "since": "2026-05-08T22:03:30",
-      "directional_accuracy_pct": 52.73
+      "directional_accuracy_pct": 54.53
     },
     "VCB__70_30": {
       "ticker": "VCB",
@@ -58,10 +58,10 @@
       "ticker": "VIC",
       "split": "70_30",
       "model": "Linear Regression",
-      "rmse": 2.56,
-      "mae": 1.19,
+      "rmse": 2.57,
+      "mae": 1.2,
       "since": "2026-05-08T22:03:30",
-      "directional_accuracy_pct": 50.63
+      "directional_accuracy_pct": 50.56
     },
     "VIC__80_20": {
       "ticker": "VIC",
@@ -326,7 +326,47 @@
       "rmse": 0.9,
       "previous_rmse": 0.89,
       "rmse_change_pct": 1.12
+    },
+    {
+      "timestamp": "2026-05-25T12:16:57",
+      "ticker": "FPT",
+      "split": "70_30",
+      "event": "retrain",
+      "model": "Linear Regression",
+      "rmse": 1.65,
+      "previous_rmse": 1.64,
+      "rmse_change_pct": 0.61
+    },
+    {
+      "timestamp": "2026-05-25T12:16:57",
+      "ticker": "HPG",
+      "split": "70_30",
+      "event": "retrain",
+      "model": "Linear Regression",
+      "rmse": 0.35,
+      "previous_rmse": 0.39,
+      "rmse_change_pct": -10.26
+    },
+    {
+      "timestamp": "2026-05-25T12:16:57",
+      "ticker": "HPG",
+      "split": "80_20",
+      "event": "retrain",
+      "model": "Linear Regression",
+      "rmse": 0.37,
+      "previous_rmse": 0.41,
+      "rmse_change_pct": -9.76
+    },
+    {
+      "timestamp": "2026-05-25T12:16:57",
+      "ticker": "VIC",
+      "split": "70_30",
+      "event": "retrain",
+      "model": "Linear Regression",
+      "rmse": 2.57,
+      "previous_rmse": 2.56,
+      "rmse_change_pct": 0.39
     }
   ],
-  "updated_at": "2026-05-22T11:37:40"
+  "updated_at": "2026-05-25T12:16:57"
 }
