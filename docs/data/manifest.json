@@ -14,6 +14,16 @@
       "name": "GRU",
       "predictions": "data/gru_predictions.csv",
       "metrics": "data/gru_metrics.csv"
+    },
+    {
+      "name": "Facebook Prophet",
+      "predictions": "data/facebook_prophet_predictions.csv",
+      "metrics": "data/facebook_prophet_metrics.csv"
+    },
+    {
+      "name": "Transformer",
+      "predictions": "data/transformer_predictions.csv",
+      "metrics": "data/transformer_metrics.csv"
     }
   ],
   "last_updated": "2026-05-27"

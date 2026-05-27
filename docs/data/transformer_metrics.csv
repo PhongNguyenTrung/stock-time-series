@@ -1,0 +1,11 @@
+Ticker,Split,Model,RMSE,MAE,MAPE (%),R²,Directional Accuracy (%)
+FPT,70_30,Transformer,6.46,4.05,3.886,0.9197,51.31
+HPG,70_30,Transformer,1.71,1.46,7.125,0.7498,49.66
+VCB,70_30,Transformer,1.75,1.22,2.025,0.8051,52.54
+VIC,70_30,Transformer,36.09,15.33,12.695,0.4332,47.89
+VNM,70_30,Transformer,1.01,0.71,1.167,0.9332,52.57
+FPT,80_20,Transformer,6.13,4.65,4.311,0.7961,50.0
+HPG,80_20,Transformer,0.67,0.54,2.293,0.9329,53.33
+VCB,80_20,Transformer,2.17,1.33,2.112,0.5663,55.83
+VIC,80_20,Transformer,46.77,24.08,18.681,0.2655,48.3
+VNM,80_20,Transformer,1.14,0.77,1.283,0.9231,52.13

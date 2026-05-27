@@ -1,0 +1,11 @@
+Ticker,Split,Model,RMSE,MAE,MAPE (%),R²,Directional Accuracy (%)
+FPT,70_30,Facebook Prophet,42.08,36.15,36.229,-2.41,49.48
+HPG,70_30,Facebook Prophet,21.95,21.12,91.413,-40.2296,50.47
+VCB,70_30,Facebook Prophet,13.81,13.34,22.182,-11.0775,51.03
+VIC,70_30,Facebook Prophet,67.61,43.42,74.105,-0.9885,46.62
+VNM,70_30,Facebook Prophet,10.1,8.5,13.889,-5.6927,53.25
+FPT,80_20,Facebook Prophet,25.23,21.01,19.794,-2.4536,49.42
+HPG,80_20,Facebook Prophet,2.25,1.83,7.941,0.2503,50.1
+VCB,80_20,Facebook Prophet,16.19,14.35,23.857,-23.1114,48.54
+VIC,80_20,Facebook Prophet,76.65,49.37,54.212,-0.973,43.4
+VNM,80_20,Facebook Prophet,3.84,3.05,5.144,0.1199,52.13

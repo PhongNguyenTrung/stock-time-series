@@ -1,6 +1,6 @@
-﻿Mã,Linear Regression
-FPT,1.65
-HPG,0.35
-VCB,0.9
-VIC,2.57
-VNM,0.89
+﻿Mã,Facebook Prophet,GRU,LSTM,Linear Regression,Transformer
+FPT,42.08,1.61,1.61,1.65,6.46
+HPG,21.95,0.39,0.4,0.35,1.71
+VCB,13.81,0.88,0.88,0.9,1.75
+VIC,67.61,2.52,2.51,2.57,36.09
+VNM,10.1,0.89,0.89,0.89,1.01
