@@ -1,0 +1,11 @@
+# Deep learning dependencies — installed only by .github/workflows/model_retrain.yml
+# (weekly cron), NOT by daily data_refresh.yml or ci.yml.
+#
+# TensorFlow/Keras: notebooks/03_lstm_gru.ipynb
+# PyTorch:          notebooks/08_transformer.ipynb
+#
+# Wheel sizes ~500MB–1GB combined; keeping them out of the daily/CI install
+# path saves ~5 minutes per GitHub Actions run.
+
+tensorflow>=2.18.0
+torch>=2.4.0

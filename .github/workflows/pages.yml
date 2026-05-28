@@ -10,7 +10,7 @@ on:
   # KHÔNG kích hoạt nhánh `push` ở trên (GitHub anti-loop). Dùng workflow_run
   # để pages tự deploy sau mỗi lần Data Refresh hoàn tất.
   workflow_run:
-    workflows: ["Data Refresh"]
+    workflows: ["Data Refresh", "Model Retrain (Heavy)"]
     types: [completed]
 
 permissions:

@@ -38,13 +38,23 @@ GitHub Actions (cron Mon–Fri 16:00 ICT)
     ↓  train/test split (70/30 and 80/20)
     ↓  validate splits (schema, row count, monotonic dates) — fail-fast
     ↓  walk-forward 5-fold benchmark (Linear Regression baseline)
-    ↓  re-execute notebook 01 → refresh predictions in docs/data/
+    ↓  re-execute notebook 01 (Linear Regression) + 07 (Prophet) → docs/data/
     ↓  aggregate_results.py → registry.json + chapter5_*.csv
     ↓     ↘ regression check: RMSE +20% vs champion → "regression_detected" event
     ↓  auto-commit docs/data/ + results/ → GitHub Pages auto-deploy
     ↓  upload → Google Sheets ✓
     ↓  on failure → Google Chat webhook (GOOGLE_CHAT_WEBHOOK_URL secret)
 ```
+
+**Weekly retrain (Sunday 18:00 ICT)** — `model_retrain.yml`:
+```
+↓  pip install -r requirements-heavy.txt        (TensorFlow + PyTorch)
+↓  full data pipeline (fresh data for fairness)
+↓  re-execute notebook 03 (LSTM/GRU) + 08 (Transformer)
+↓  aggregate + auto-commit → Pages auto-deploy
+```
+Heavy deep learning models (~10–30 phút mỗi notebook) tách riêng để tránh
+chạy lại hàng ngày — đảm bảo so sánh model công bằng (cùng snapshot data).
 
 **Optional secrets** (configure in GitHub repo → Settings → Secrets → Actions):
 - `GOOGLE_SERVICE_ACCOUNT_JSON`, `SHEETS_SPREADSHEET_ID` — Google Sheets upload

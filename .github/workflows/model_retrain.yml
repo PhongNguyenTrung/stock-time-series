@@ -1,0 +1,115 @@
+name: Model Retrain (Heavy)
+
+# Weekly retrain cho các model deep learning (LSTM/GRU + Transformer) —
+# quá nặng cho daily cron (~10-30 phút mỗi notebook).
+#
+# Chạy CN 18:00 ICT (= CN 11:00 UTC) — sau khi data_refresh.yml cuối tuần
+# trước (Thứ 6 16:00 ICT) đã commit data fresh. Ở step pipeline phía dưới
+# vẫn refresh lại để chắc data mới nhất; collect step có freshness cache.
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Force re-download (bỏ qua freshness cache)"
+        required: false
+        default: false
+        type: boolean
+
+  schedule:
+    - cron: "0 11 * * 0"   # Chủ Nhật 11:00 UTC = 18:00 CH giờ VN
+
+permissions:
+  # Cần để auto-commit docs/data/ + results/ trở lại main → trigger pages.yml.
+  contents: write
+
+jobs:
+  retrain:
+    name: Retrain Heavy Models
+    runs-on: ubuntu-latest
+    timeout-minutes: 180   # LSTM + Transformer × 5 mã × 2 splits có thể chạm 2 giờ
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies (base + heavy)
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-heavy.txt
+
+      # Pipeline full để đảm bảo data fresh trước khi train deep models.
+      - name: Run data pipeline (collect → clean → features → split → validate)
+        run: |
+          FORCE_FLAG=""
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            FORCE_FLAG="--force"
+          fi
+          python scripts/run_pipeline.py --skip-upload --skip-sheets $FORCE_FLAG
+
+      - name: Retrain LSTM + GRU (notebook 03)
+        continue-on-error: true
+        run: |
+          jupyter nbconvert --to notebook --execute notebooks/03_lstm_gru.ipynb \
+            --output /tmp/03_executed.ipynb \
+            --ExecutePreprocessor.timeout=3600
+
+      - name: Retrain Transformer (notebook 08)
+        continue-on-error: true
+        run: |
+          jupyter nbconvert --to notebook --execute notebooks/08_transformer.ipynb \
+            --output /tmp/08_executed.ipynb \
+            --ExecutePreprocessor.timeout=3600
+
+      - name: Aggregate results + update registry
+        continue-on-error: true
+        run: python scripts/aggregate_results.py --no-plot
+
+      - name: Commit refreshed predictions back to main
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/ results/
+          if git diff --cached --quiet; then
+            echo "Không có thay đổi để commit."
+          else
+            git commit -m "Auto: weekly retrain (LSTM/GRU + Transformer) for $(date -u +%Y-%m-%d)"
+            git push origin main
+          fi
+
+      - name: Report registry champions
+        if: always()
+        run: |
+          echo "=== Champions hiện tại ==="
+          python -c "import json; r=json.load(open('results/registry.json')); print(json.dumps({k: v['model'] + ' (RMSE=' + str(v['rmse']) + ')' for k, v in r['champions'].items()}, indent=2, ensure_ascii=False))" || echo "(registry chưa có)"
+
+      - name: Upload artifact (executed notebooks + plots)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-retrain-${{ github.run_id }}
+          path: |
+            results/lstm/
+            results/gru/
+            results/transformer/
+          retention-days: 60
+          if-no-files-found: warn
+
+      - name: Notify on failure (Google Chat webhook)
+        if: failure()
+        env:
+          WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "GOOGLE_CHAT_WEBHOOK_URL not set — skipping notification."
+            exit 0
+          fi
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          MSG="🔴 *Model Retrain (Heavy) failed* — $(date -u +%Y-%m-%d %H:%M\ UTC)\nRepo: ${{ github.repository }}\nRun: $RUN_URL"
+          curl -fsS -X POST -H "Content-Type: application/json; charset=UTF-8" \
+            -d "$(jq -n --arg text "$MSG" '{text: $text}')" \
+            "$WEBHOOK_URL"

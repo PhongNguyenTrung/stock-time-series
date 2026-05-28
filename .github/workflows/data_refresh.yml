@@ -64,15 +64,22 @@ jobs:
         continue-on-error: true
         run: python scripts/walkforward_eval.py
 
-      # Refresh model predictions: chạy notebook 01 headless để regenerate
-      # docs/data/linear_regression_predictions.csv + metrics.csv + manifest.json.
+      # Refresh "cheap" model predictions daily — re-trainable trong < 2 phút mỗi notebook.
+      # Notebook nặng (LSTM, Transformer) chạy weekly ở .github/workflows/model_retrain.yml.
       # Output notebook đẩy ra /tmp để KHÔNG commit lại notebook đã thực thi.
-      - name: Refresh model predictions (notebook 01 headless)
+      - name: Refresh Linear Regression predictions (notebook 01)
         continue-on-error: true
         run: |
           jupyter nbconvert --to notebook --execute notebooks/01_linear_regression.ipynb \
             --output /tmp/01_executed.ipynb \
             --ExecutePreprocessor.timeout=300
+
+      - name: Refresh Prophet predictions (notebook 07)
+        continue-on-error: true
+        run: |
+          jupyter nbconvert --to notebook --execute notebooks/07_facebook_prophet.ipynb \
+            --output /tmp/07_executed.ipynb \
+            --ExecutePreprocessor.timeout=1200
 
       # Tổng hợp kết quả + cập nhật registry.json sau khi notebook đã sinh CSV mới.
       - name: Aggregate results + update registry
