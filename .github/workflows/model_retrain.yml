@@ -27,7 +27,7 @@ jobs:
   retrain:
     name: Retrain Heavy Models
     runs-on: ubuntu-latest
-    timeout-minutes: 180   # LSTM + Transformer × 5 mã × 2 splits có thể chạm 2 giờ
+    timeout-minutes: 10    # Hard ceiling — notebook nào quá budget sẽ bị cut, continue-on-error giữ workflow pass
 
     steps:
       - uses: actions/checkout@v6
@@ -56,14 +56,14 @@ jobs:
         run: |
           jupyter nbconvert --to notebook --execute notebooks/03_lstm_gru.ipynb \
             --output /tmp/03_executed.ipynb \
-            --ExecutePreprocessor.timeout=3600
+            --ExecutePreprocessor.timeout=300
 
       - name: Retrain Transformer (notebook 08)
         continue-on-error: true
         run: |
           jupyter nbconvert --to notebook --execute notebooks/08_transformer.ipynb \
             --output /tmp/08_executed.ipynb \
-            --ExecutePreprocessor.timeout=3600
+            --ExecutePreprocessor.timeout=300
 
       - name: Aggregate results + update registry
         continue-on-error: true
