@@ -1,11 +1,6 @@
 {
   "models": [
     {
-      "name": "Linear Regression",
-      "predictions": "data/linear_regression_predictions.csv",
-      "metrics": "data/linear_regression_metrics.csv"
-    },
-    {
       "name": "LSTM",
       "predictions": "data/lstm_predictions.csv",
       "metrics": "data/lstm_metrics.csv"
@@ -24,7 +19,12 @@
       "name": "Transformer",
       "predictions": "data/transformer_predictions.csv",
       "metrics": "data/transformer_metrics.csv"
+    },
+    {
+      "name": "Linear Regression",
+      "predictions": "data/linear_regression_predictions.csv",
+      "metrics": "data/linear_regression_metrics.csv"
     }
   ],
-  "last_updated": "2026-05-27"
+  "last_updated": "2026-05-28"
 }
