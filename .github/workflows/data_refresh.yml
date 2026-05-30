@@ -50,7 +50,7 @@ jobs:
 
       # vnstock (VCI) thường bị block ngoài IP Việt Nam.
       # Pipeline tự động fallback sang yfinance (.VN suffix).
-      - name: Run pipeline (collect → preprocess → split)
+      - name: Run pipeline (collect → clean → features → split → validate)
         run: |
           FORCE_FLAG=""
           if [ "${{ github.event.inputs.force }}" = "true" ]; then
@@ -81,6 +81,20 @@ jobs:
             --output /tmp/07_executed.ipynb \
             --ExecutePreprocessor.timeout=1200
 
+      - name: Refresh ARIMA predictions (notebook 04)
+        continue-on-error: true
+        run: |
+          jupyter nbconvert --to notebook --execute notebooks/04_ARIMA.ipynb \
+            --output /tmp/04_executed.ipynb \
+            --ExecutePreprocessor.timeout=600
+
+      - name: Refresh SVR predictions (notebook 05)
+        continue-on-error: true
+        run: |
+          jupyter nbconvert --to notebook --execute notebooks/05_SVR.ipynb \
+            --output /tmp/05_executed.ipynb \
+            --ExecutePreprocessor.timeout=600
+
       # Tổng hợp kết quả + cập nhật registry.json sau khi notebook đã sinh CSV mới.
       - name: Aggregate results + update registry
         continue-on-error: true
@@ -104,12 +118,19 @@ jobs:
       # Kích hoạt khi 2 secrets được cấu hình:
       #   GOOGLE_SERVICE_ACCOUNT_JSON  ← nội dung JSON key của service account
       #   SHEETS_SPREADSHEET_ID        ← ID từ URL của Google Sheet
+      # LƯU Ý: KHÔNG dùng `if: env.GOOGLE_SERVICE_ACCOUNT_JSON != ''` — `if` được
+      # evaluate TRƯỚC khi step-level `env` áp dụng, nên condition luôn false.
+      # Thay vào đó: bash check ở đầu run script.
       - name: Upload to Google Sheets
-        if: ${{ env.GOOGLE_SERVICE_ACCOUNT_JSON != '' }}
         env:
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           SHEETS_SPREADSHEET_ID: ${{ secrets.SHEETS_SPREADSHEET_ID }}
-        run: python -c "from src.sheets import upload_to_sheets; upload_to_sheets()"
+        run: |
+          if [ -z "$GOOGLE_SERVICE_ACCOUNT_JSON" ]; then
+            echo "GOOGLE_SERVICE_ACCOUNT_JSON not set — skipping Sheets upload."
+            exit 0
+          fi
+          python -c "from src.sheets import upload_to_sheets; upload_to_sheets()"
 
       - name: Report results
         if: always()

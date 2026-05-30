@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
-"""Tổng hợp kết quả từ tất cả thành viên → bảng so sánh Chương 5.
+"""Aggregate per-model results into cross-model comparison tables and plots.
 
-Cách dùng:
-  python scripts/aggregate_results.py               # tổng hợp + vẽ biểu đồ
-  python scripts/aggregate_results.py --split 70_30 # chỉ 1 tỷ lệ split
-  python scripts/aggregate_results.py --no-plot     # chỉ xuất bảng CSV/text
+Usage:
+  python scripts/aggregate_results.py               # aggregate + render plots
+  python scripts/aggregate_results.py --split 70_30 # restrict to one split ratio
+  python scripts/aggregate_results.py --no-plot     # CSV / text output only
 
-Quy ước CSV đầu vào (mỗi thành viên export ra):
-  results/<tên_model>/<tên_model>_results.csv
-  Cột bắt buộc: Ticker, Split, Model, RMSE, MAE, MAPE (%), R²
+Input convention (one CSV per model):
+  results/<model_name>/<model_name>_results.csv
+  Required columns: Ticker, Split, Model, RMSE, MAE, MAPE (%), R²
+  Optional column:  Directional Accuracy (%)
 
-Đầu ra:
-  results/comparison/chapter5_comparison.csv        ← bảng tổng hợp
-  results/comparison/chapter5_pivot_rmse.csv        ← pivot RMSE
-  results/comparison/chapter5_pivot_mae.csv         ← pivot MAE
-  results/comparison/plots/                         ← biểu đồ so sánh
+Outputs:
+  results/comparison/chapter5_comparison.csv        ← combined long-form table
+  results/comparison/chapter5_pivot_rmse_*.csv      ← RMSE pivots per split
+  results/comparison/chapter5_pivot_mae_*.csv       ← MAE pivots per split
+  results/comparison/chapter5_walkforward_*.csv     ← walk-forward summaries
+  results/comparison/plots/                         ← bar / heatmap / rank PNGs
+  results/registry.json                             ← champion + history
 """
 
 import argparse

@@ -25,9 +25,9 @@
 
 ## Đối tượng sử dụng
 
-- **Member 1 (Data Engineer & Report Coordinator):** tham chiếu khi xây pipeline, viết báo cáo, hỗ trợ team
-- **Member 2/3/4 (Model Developers):** đọc trước khi implement model — đặc biệt mục 04, 06, 07
-- **Reviewer / giáo viên:** quick reference các quy ước và quyết định kỹ thuật
+- **Data engineer / pipeline maintainer:** tham chiếu khi xây pipeline và xử lý dữ liệu
+- **Model developer:** đọc trước khi implement model — đặc biệt mục 04, 06, 07
+- **Reviewer:** quick reference các quy ước và quyết định kỹ thuật
 
 ## Thứ tự đề xuất đọc
 
@@ -35,11 +35,11 @@
 `01 → 02 → 03 → 04 → 08`  
 (Hiểu data trước, rồi đến split, metrics, đặc thù VN)
 
-### Cho member triển khai model
+### Cho người triển khai model
 `04 → 06 → 07 → 09`  
 (Metrics → cách đánh giá → model cụ thể → tránh lỗi)
 
-### Cho viết Chapter 3 (EDA)
+### Cho EDA
 `01 → 02 → 05 → 08`
 
 ### Cho viết Chapter 4 (Models)

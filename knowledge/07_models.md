@@ -1,25 +1,25 @@
 # 🤖 07 — Model-specific Know-how
 
-Tổng hợp kiến thức cốt lõi cho 7 mô hình dự báo trong dự án. Phục vụ Member 1 hỗ trợ Member 2/3/4 và viết Chapter 4.
+Tổng hợp kiến thức cốt lõi cho 7 mô hình dự báo được triển khai trong framework.
 
 ## Tổng quan
 
-Dự án so sánh 7 mô hình thuộc 3 nhóm:
+Bảng so sánh 7 mô hình thuộc 3 nhóm:
 
-| Nhóm                   | Model              | Member  | Đặc điểm                                                |
-| ---------------------- | ------------------ | ------- | ------------------------------------------------------- |
-| Statistical (cổ điển)  | Linear Regression  | 1       | Baseline tuyến tính với lag features                    |
-|                        | ARIMA              | 2/3/4   | AutoRegressive Integrated Moving Average — chuẩn cho time series |
-|                        | Prophet            | 2/3/4   | Facebook Prophet — chuyên decomposition trend + seasonality |
-| Machine Learning       | SVR                | 2/3/4   | Support Vector Regression — kernel-based, robust với outliers |
-|                        | XGBoost            | 2/3/4   | Gradient boosting — mạnh với tabular features          |
-| Deep Learning          | LSTM               | 2/3/4   | Long Short-Term Memory — capture dependencies dài hạn   |
-|                        | GRU                | 2/3/4   | Gated Recurrent Unit — đơn giản hơn LSTM, train nhanh hơn |
-|                        | Transformer        | 2/3/4   | Self-attention — state-of-the-art cho sequence          |
+| Nhóm                   | Model              | Đặc điểm                                                |
+| ---------------------- | ------------------ | ------------------------------------------------------- |
+| Statistical (cổ điển)  | Linear Regression  | Baseline tuyến tính với lag features                    |
+|                        | ARIMA              | AutoRegressive Integrated Moving Average — chuẩn cho time series |
+|                        | Prophet            | Facebook Prophet — chuyên decomposition trend + seasonality |
+| Machine Learning       | SVR                | Support Vector Regression — kernel-based, robust với outliers |
+|                        | XGBoost            | Gradient boosting — mạnh với tabular features          |
+| Deep Learning          | LSTM               | Long Short-Term Memory — capture dependencies dài hạn   |
+|                        | GRU                | Gated Recurrent Unit — đơn giản hơn LSTM, train nhanh hơn |
+|                        | Transformer        | Self-attention — state-of-the-art cho sequence          |
 
 ---
 
-## 1. Linear Regression (Member 1 — done)
+## 1. Linear Regression
 
 - **Tham số chính:** không có (hoặc regularization với Ridge/Lasso)
 - **Feature:** lag features (close[t-1], close[t-2], ..., close[t-k]) + technical indicators
@@ -232,10 +232,10 @@ State-of-the-art cho sequence modeling. Phức tạp hơn LSTM nhưng có thể 
 
 ## 10. Pipeline đánh giá chung
 
-1. Mỗi member train mô hình trên tập train (70% hoặc 80%)
+1. Train mô hình trên tập train (70% hoặc 80%)
 2. Dự báo trên tập test → lưu file `<model>_predictions.csv`
-3. Tính 4 metrics → lưu file `<model>_metrics.csv`
-4. Member 1 (Data Engineer) tổng hợp → bảng so sánh ở Chapter 5
+3. Tính các metrics → lưu file `<model>_metrics.csv`
+4. `scripts/aggregate_results.py` tổng hợp → bảng so sánh trong `results/comparison/`
 
 CSV format chuẩn — xem [04_metrics.md § Quy ước CSV](04_metrics.md).
 
