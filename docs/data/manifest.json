@@ -1,16 +1,6 @@
 {
   "models": [
     {
-      "name": "LSTM",
-      "predictions": "data/lstm_predictions.csv",
-      "metrics": "data/lstm_metrics.csv"
-    },
-    {
-      "name": "GRU",
-      "predictions": "data/gru_predictions.csv",
-      "metrics": "data/gru_metrics.csv"
-    },
-    {
       "name": "Facebook Prophet",
       "predictions": "data/facebook_prophet_predictions.csv",
       "metrics": "data/facebook_prophet_metrics.csv"
@@ -34,7 +24,17 @@
       "name": "SVR",
       "predictions": "data/svr_predictions.csv",
       "metrics": "data/svr_metrics.csv"
+    },
+    {
+      "name": "LSTM",
+      "predictions": "data/lstm_predictions.csv",
+      "metrics": "data/lstm_metrics.csv"
+    },
+    {
+      "name": "GRU",
+      "predictions": "data/gru_predictions.csv",
+      "metrics": "data/gru_metrics.csv"
     }
   ],
-  "last_updated": "2026-05-29"
+  "last_updated": "2026-05-31"
 }
