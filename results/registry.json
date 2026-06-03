@@ -84,11 +84,11 @@
     "VNM__80_20": {
       "ticker": "VNM",
       "split": "80_20",
-      "model": "ARIMA",
-      "rmse": 0.97,
+      "model": "SVR",
+      "rmse": 0.96,
       "mae": 0.64,
-      "since": "2026-05-29T23:24:48",
-      "directional_accuracy_pct": 54.36
+      "since": "2026-06-03T13:14:56",
+      "directional_accuracy_pct": 46.79
     }
   },
   "history": [
@@ -597,7 +597,17 @@
       "to_model": "ARIMA",
       "rmse_change_pct": 1.08,
       "rmse_improvement": -0.01
+    },
+    {
+      "timestamp": "2026-06-03T13:14:56",
+      "ticker": "VNM",
+      "split": "80_20",
+      "event": "promote",
+      "from_model": "ARIMA",
+      "to_model": "SVR",
+      "rmse_change_pct": -1.03,
+      "rmse_improvement": 0.01
     }
   ],
-  "updated_at": "2026-06-02T12:43:50"
+  "updated_at": "2026-06-03T13:14:56"
 }
