@@ -3,29 +3,29 @@
     "FPT__70_30": {
       "ticker": "FPT",
       "split": "70_30",
-      "model": "GRU",
+      "model": "ARIMA",
       "rmse": 1.6,
       "mae": 1.12,
-      "since": "2026-05-31T12:14:18",
-      "directional_accuracy_pct": 51.04
+      "since": "2026-06-05T12:12:04",
+      "directional_accuracy_pct": 53.69
     },
     "FPT__80_20": {
       "ticker": "FPT",
       "split": "80_20",
-      "model": "LSTM",
+      "model": "ARIMA",
       "rmse": 1.86,
       "mae": 1.39,
-      "since": "2026-05-31T12:14:18",
-      "directional_accuracy_pct": 48.56
+      "since": "2026-06-05T12:12:04",
+      "directional_accuracy_pct": 54.6
     },
     "HPG__70_30": {
       "ticker": "HPG",
       "split": "70_30",
-      "model": "GRU",
+      "model": "ARIMA",
       "rmse": 0.35,
-      "mae": 0.25,
-      "since": "2026-05-31T12:14:18",
-      "directional_accuracy_pct": 48.11
+      "mae": 0.24,
+      "since": "2026-06-05T12:12:04",
+      "directional_accuracy_pct": 48.86
     },
     "HPG__80_20": {
       "ticker": "HPG",
@@ -57,20 +57,20 @@
     "VIC__70_30": {
       "ticker": "VIC",
       "split": "70_30",
-      "model": "ARIMA",
-      "rmse": 2.47,
-      "mae": 1.14,
-      "since": "2026-05-29T23:24:48",
-      "directional_accuracy_pct": 53.24
+      "model": "GRU",
+      "rmse": 2.56,
+      "mae": 1.19,
+      "since": "2026-06-05T12:12:04",
+      "directional_accuracy_pct": 50.77
     },
     "VIC__80_20": {
       "ticker": "VIC",
       "split": "80_20",
-      "model": "ARIMA",
-      "rmse": 3.0,
-      "mae": 1.54,
-      "since": "2026-05-29T23:24:48",
-      "directional_accuracy_pct": 55.32
+      "model": "GRU",
+      "rmse": 3.08,
+      "mae": 1.63,
+      "since": "2026-06-05T12:12:04",
+      "directional_accuracy_pct": 54.64
     },
     "VNM__70_30": {
       "ticker": "VNM",
@@ -607,7 +607,57 @@
       "to_model": "SVR",
       "rmse_change_pct": -1.03,
       "rmse_improvement": 0.01
+    },
+    {
+      "timestamp": "2026-06-05T12:12:04",
+      "ticker": "FPT",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "GRU",
+      "to_model": "ARIMA",
+      "rmse_change_pct": 0.0,
+      "rmse_improvement": 0.0
+    },
+    {
+      "timestamp": "2026-06-05T12:12:04",
+      "ticker": "FPT",
+      "split": "80_20",
+      "event": "promote",
+      "from_model": "LSTM",
+      "to_model": "ARIMA",
+      "rmse_change_pct": 0.0,
+      "rmse_improvement": 0.0
+    },
+    {
+      "timestamp": "2026-06-05T12:12:04",
+      "ticker": "HPG",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "GRU",
+      "to_model": "ARIMA",
+      "rmse_change_pct": 0.0,
+      "rmse_improvement": 0.0
+    },
+    {
+      "timestamp": "2026-06-05T12:12:04",
+      "ticker": "VIC",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "ARIMA",
+      "to_model": "GRU",
+      "rmse_change_pct": 3.64,
+      "rmse_improvement": -0.09
+    },
+    {
+      "timestamp": "2026-06-05T12:12:04",
+      "ticker": "VIC",
+      "split": "80_20",
+      "event": "promote",
+      "from_model": "ARIMA",
+      "to_model": "GRU",
+      "rmse_change_pct": 2.67,
+      "rmse_improvement": -0.08
     }
   ],
-  "updated_at": "2026-06-04T11:53:47"
+  "updated_at": "2026-06-05T12:12:04"
 }

@@ -11,11 +11,6 @@
       "metrics": "data/transformer_metrics.csv"
     },
     {
-      "name": "ARIMA",
-      "predictions": "data/arima_predictions.csv",
-      "metrics": "data/arima_metrics.csv"
-    },
-    {
       "name": "LSTM",
       "predictions": "data/lstm_predictions.csv",
       "metrics": "data/lstm_metrics.csv"
@@ -31,10 +26,15 @@
       "metrics": "data/linear_regression_metrics.csv"
     },
     {
+      "name": "ARIMA",
+      "predictions": "data/arima_predictions.csv",
+      "metrics": "data/arima_metrics.csv"
+    },
+    {
       "name": "SVR",
       "predictions": "data/svr_predictions.csv",
       "metrics": "data/svr_metrics.csv"
     }
   ],
-  "last_updated": "2026-06-04"
+  "last_updated": "2026-06-05"
 }
