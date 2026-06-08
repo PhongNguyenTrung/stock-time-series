@@ -11,19 +11,9 @@
       "metrics": "data/transformer_metrics.csv"
     },
     {
-      "name": "Linear Regression",
-      "predictions": "data/linear_regression_predictions.csv",
-      "metrics": "data/linear_regression_metrics.csv"
-    },
-    {
       "name": "ARIMA",
       "predictions": "data/arima_predictions.csv",
       "metrics": "data/arima_metrics.csv"
-    },
-    {
-      "name": "SVR",
-      "predictions": "data/svr_predictions.csv",
-      "metrics": "data/svr_metrics.csv"
     },
     {
       "name": "LSTM",
@@ -34,7 +24,17 @@
       "name": "GRU",
       "predictions": "data/gru_predictions.csv",
       "metrics": "data/gru_metrics.csv"
+    },
+    {
+      "name": "Linear Regression",
+      "predictions": "data/linear_regression_predictions.csv",
+      "metrics": "data/linear_regression_metrics.csv"
+    },
+    {
+      "name": "SVR",
+      "predictions": "data/svr_predictions.csv",
+      "metrics": "data/svr_metrics.csv"
     }
   ],
-  "last_updated": "2026-06-07"
+  "last_updated": "2026-06-08"
 }
