@@ -39,11 +39,11 @@
     "VCB__70_30": {
       "ticker": "VCB",
       "split": "70_30",
-      "model": "SVR",
+      "model": "LSTM",
       "rmse": 0.87,
       "mae": 0.57,
-      "since": "2026-06-11T12:46:39",
-      "directional_accuracy_pct": 49.12
+      "since": "2026-06-14T13:05:51",
+      "directional_accuracy_pct": 49.32
     },
     "VCB__80_20": {
       "ticker": "VCB",
@@ -84,11 +84,11 @@
     "VNM__80_20": {
       "ticker": "VNM",
       "split": "80_20",
-      "model": "SVR",
+      "model": "LSTM",
       "rmse": 0.96,
       "mae": 0.64,
-      "since": "2026-06-03T13:14:56",
-      "directional_accuracy_pct": 46.79
+      "since": "2026-06-14T13:05:51",
+      "directional_accuracy_pct": 50.2
     }
   },
   "history": [
@@ -707,7 +707,27 @@
       "to_model": "SVR",
       "rmse_change_pct": -1.06,
       "rmse_improvement": 0.01
+    },
+    {
+      "timestamp": "2026-06-14T13:05:51",
+      "ticker": "VCB",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "SVR",
+      "to_model": "LSTM",
+      "rmse_change_pct": 0.0,
+      "rmse_improvement": 0.0
+    },
+    {
+      "timestamp": "2026-06-14T13:05:51",
+      "ticker": "VNM",
+      "split": "80_20",
+      "event": "promote",
+      "from_model": "SVR",
+      "to_model": "LSTM",
+      "rmse_change_pct": 0.0,
+      "rmse_improvement": 0.0
     }
   ],
-  "updated_at": "2026-06-12T12:21:08"
+  "updated_at": "2026-06-14T13:05:51"
 }
