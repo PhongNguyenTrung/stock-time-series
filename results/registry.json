@@ -75,11 +75,11 @@
     "VNM__70_30": {
       "ticker": "VNM",
       "split": "70_30",
-      "model": "SVR",
-      "rmse": 0.88,
-      "mae": 0.61,
-      "since": "2026-06-11T12:46:39",
-      "directional_accuracy_pct": 46.85
+      "model": "ARIMA",
+      "rmse": 0.89,
+      "mae": 0.6,
+      "since": "2026-06-15T15:03:58",
+      "directional_accuracy_pct": 53.42
     },
     "VNM__80_20": {
       "ticker": "VNM",
@@ -727,7 +727,17 @@
       "to_model": "LSTM",
       "rmse_change_pct": 0.0,
       "rmse_improvement": 0.0
+    },
+    {
+      "timestamp": "2026-06-15T15:03:58",
+      "ticker": "VNM",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "SVR",
+      "to_model": "ARIMA",
+      "rmse_change_pct": 1.14,
+      "rmse_improvement": -0.01
     }
   ],
-  "updated_at": "2026-06-14T13:05:51"
+  "updated_at": "2026-06-15T15:03:58"
 }
