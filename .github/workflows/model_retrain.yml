@@ -30,7 +30,7 @@ jobs:
     timeout-minutes: 10    # Hard ceiling — notebook nào quá budget sẽ bị cut, continue-on-error giữ workflow pass
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v6
         with:
