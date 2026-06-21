@@ -8,4 +8,4 @@
 # path saves ~5 minutes per GitHub Actions run.
 
 tensorflow>=2.21.0
-torch>=2.12.0
+torch>=2.12.1
