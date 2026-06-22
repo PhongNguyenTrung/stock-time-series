@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       # Debug helper — chỉ chạy khi workflow_dispatch input force_fail=true.
       # Mục đích duy nhất: trigger notification step để verify webhook hoạt động.
