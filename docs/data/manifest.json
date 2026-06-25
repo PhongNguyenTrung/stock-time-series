@@ -21,14 +21,14 @@
       "metrics": "data/gru_metrics.csv"
     },
     {
-      "name": "Linear Regression",
-      "predictions": "data/linear_regression_predictions.csv",
-      "metrics": "data/linear_regression_metrics.csv"
-    },
-    {
       "name": "ARIMA",
       "predictions": "data/arima_predictions.csv",
       "metrics": "data/arima_metrics.csv"
+    },
+    {
+      "name": "Linear Regression",
+      "predictions": "data/linear_regression_predictions.csv",
+      "metrics": "data/linear_regression_metrics.csv"
     },
     {
       "name": "SVR",
@@ -36,5 +36,5 @@
       "metrics": "data/svr_metrics.csv"
     }
   ],
-  "last_updated": "2026-06-24"
+  "last_updated": "2026-06-25"
 }
