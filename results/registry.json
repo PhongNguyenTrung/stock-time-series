@@ -12,11 +12,11 @@
     "FPT__80_20": {
       "ticker": "FPT",
       "split": "80_20",
-      "model": "ARIMA",
-      "rmse": 1.91,
+      "model": "SVR",
+      "rmse": 1.9,
       "mae": 1.4,
-      "since": "2026-06-05T12:12:04",
-      "directional_accuracy_pct": 53.28
+      "since": "2026-06-26T11:47:35",
+      "directional_accuracy_pct": 45.67
     },
     "HPG__70_30": {
       "ticker": "HPG",
@@ -75,20 +75,20 @@
     "VNM__70_30": {
       "ticker": "VNM",
       "split": "70_30",
-      "model": "ARIMA",
-      "rmse": 0.94,
-      "mae": 0.62,
-      "since": "2026-06-15T15:03:58",
-      "directional_accuracy_pct": 53.94
+      "model": "Linear Regression",
+      "rmse": 0.91,
+      "mae": 0.61,
+      "since": "2026-06-26T11:47:35",
+      "directional_accuracy_pct": 52.21
     },
     "VNM__80_20": {
       "ticker": "VNM",
       "split": "80_20",
-      "model": "ARIMA",
-      "rmse": 1.03,
-      "mae": 0.69,
-      "since": "2026-06-21T13:09:26",
-      "directional_accuracy_pct": 53.66
+      "model": "Linear Regression",
+      "rmse": 1.0,
+      "mae": 0.67,
+      "since": "2026-06-26T11:47:35",
+      "directional_accuracy_pct": 54.08
     }
   },
   "history": [
@@ -867,7 +867,37 @@
       "rmse": 1.03,
       "previous_rmse": 0.97,
       "rmse_change_pct": 6.19
+    },
+    {
+      "timestamp": "2026-06-26T11:47:35",
+      "ticker": "FPT",
+      "split": "80_20",
+      "event": "promote",
+      "from_model": "ARIMA",
+      "to_model": "SVR",
+      "rmse_change_pct": -0.52,
+      "rmse_improvement": 0.01
+    },
+    {
+      "timestamp": "2026-06-26T11:47:35",
+      "ticker": "VNM",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "ARIMA",
+      "to_model": "Linear Regression",
+      "rmse_change_pct": -3.19,
+      "rmse_improvement": 0.03
+    },
+    {
+      "timestamp": "2026-06-26T11:47:35",
+      "ticker": "VNM",
+      "split": "80_20",
+      "event": "promote",
+      "from_model": "ARIMA",
+      "to_model": "Linear Regression",
+      "rmse_change_pct": -2.91,
+      "rmse_improvement": 0.03
     }
   ],
-  "updated_at": "2026-06-25T11:41:54"
+  "updated_at": "2026-06-26T11:47:35"
 }
