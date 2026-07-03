@@ -13,19 +13,19 @@
       "ticker": "FPT",
       "split": "80_20",
       "model": "SVR",
-      "rmse": 1.9,
+      "rmse": 1.89,
       "mae": 1.39,
       "since": "2026-06-26T11:47:35",
-      "directional_accuracy_pct": 45.41
+      "directional_accuracy_pct": 45.14
     },
     "HPG__70_30": {
       "ticker": "HPG",
       "split": "70_30",
-      "model": "ARIMA",
-      "rmse": 0.37,
-      "mae": 0.26,
-      "since": "2026-06-05T12:12:04",
-      "directional_accuracy_pct": 49.82
+      "model": "Linear Regression",
+      "rmse": 0.36,
+      "mae": 0.25,
+      "since": "2026-07-03T11:33:52",
+      "directional_accuracy_pct": 54.11
     },
     "HPG__80_20": {
       "ticker": "HPG",
@@ -977,7 +977,27 @@
       "to_model": "SVR",
       "rmse_change_pct": -0.55,
       "rmse_improvement": 0.01
+    },
+    {
+      "timestamp": "2026-07-03T11:33:52",
+      "ticker": "FPT",
+      "split": "80_20",
+      "event": "retrain",
+      "model": "SVR",
+      "rmse": 1.89,
+      "previous_rmse": 1.9,
+      "rmse_change_pct": -0.53
+    },
+    {
+      "timestamp": "2026-07-03T11:33:52",
+      "ticker": "HPG",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "ARIMA",
+      "to_model": "Linear Regression",
+      "rmse_change_pct": -2.7,
+      "rmse_improvement": 0.01
     }
   ],
-  "updated_at": "2026-07-02T11:35:41"
+  "updated_at": "2026-07-03T11:33:52"
 }
