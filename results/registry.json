@@ -13,8 +13,8 @@
       "ticker": "FPT",
       "split": "80_20",
       "model": "SVR",
-      "rmse": 1.89,
-      "mae": 1.39,
+      "rmse": 1.88,
+      "mae": 1.38,
       "since": "2026-06-26T11:47:35",
       "directional_accuracy_pct": 45.14
     },
@@ -997,7 +997,17 @@
       "to_model": "Linear Regression",
       "rmse_change_pct": -2.7,
       "rmse_improvement": 0.01
+    },
+    {
+      "timestamp": "2026-07-06T12:44:15",
+      "ticker": "FPT",
+      "split": "80_20",
+      "event": "retrain",
+      "model": "SVR",
+      "rmse": 1.88,
+      "previous_rmse": 1.89,
+      "rmse_change_pct": -0.53
     }
   ],
-  "updated_at": "2026-07-05T12:18:26"
+  "updated_at": "2026-07-06T12:44:15"
 }
