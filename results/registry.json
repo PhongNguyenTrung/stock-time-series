@@ -21,11 +21,11 @@
     "HPG__70_30": {
       "ticker": "HPG",
       "split": "70_30",
-      "model": "Linear Regression",
-      "rmse": 0.36,
+      "model": "ARIMA",
+      "rmse": 0.37,
       "mae": 0.25,
-      "since": "2026-07-03T11:33:52",
-      "directional_accuracy_pct": 54.11
+      "since": "2026-07-13T11:58:20",
+      "directional_accuracy_pct": 49.91
     },
     "HPG__80_20": {
       "ticker": "HPG",
@@ -1077,7 +1077,17 @@
       "rmse": 3.93,
       "previous_rmse": 3.92,
       "rmse_change_pct": 0.26
+    },
+    {
+      "timestamp": "2026-07-13T11:58:20",
+      "ticker": "HPG",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "Linear Regression",
+      "to_model": "ARIMA",
+      "rmse_change_pct": 2.78,
+      "rmse_improvement": -0.01
     }
   ],
-  "updated_at": "2026-07-12T12:00:43"
+  "updated_at": "2026-07-13T11:58:20"
 }
