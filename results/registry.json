@@ -3,11 +3,11 @@
     "FPT__70_30": {
       "ticker": "FPT",
       "split": "70_30",
-      "model": "SVR",
-      "rmse": 1.8,
+      "model": "ARIMA",
+      "rmse": 1.81,
       "mae": 1.33,
-      "since": "2026-07-02T11:35:41",
-      "directional_accuracy_pct": 48.68
+      "since": "2026-07-15T10:51:00",
+      "directional_accuracy_pct": 54.75
     },
     "FPT__80_20": {
       "ticker": "FPT",
@@ -75,11 +75,11 @@
     "VNM__70_30": {
       "ticker": "VNM",
       "split": "70_30",
-      "model": "ARIMA",
-      "rmse": 0.91,
-      "mae": 0.6,
-      "since": "2026-07-10T11:56:38",
-      "directional_accuracy_pct": 54.41
+      "model": "Linear Regression",
+      "rmse": 0.9,
+      "mae": 0.61,
+      "since": "2026-07-15T10:51:00",
+      "directional_accuracy_pct": 51.65
     },
     "VNM__80_20": {
       "ticker": "VNM",
@@ -1097,7 +1097,27 @@
       "to_model": "Linear Regression",
       "rmse_change_pct": -2.7,
       "rmse_improvement": 0.01
+    },
+    {
+      "timestamp": "2026-07-15T10:51:00",
+      "ticker": "FPT",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "SVR",
+      "to_model": "ARIMA",
+      "rmse_change_pct": 0.56,
+      "rmse_improvement": -0.01
+    },
+    {
+      "timestamp": "2026-07-15T10:51:00",
+      "ticker": "VNM",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "ARIMA",
+      "to_model": "Linear Regression",
+      "rmse_change_pct": -1.1,
+      "rmse_improvement": 0.01
     }
   ],
-  "updated_at": "2026-07-14T10:38:56"
+  "updated_at": "2026-07-15T10:51:00"
 }
