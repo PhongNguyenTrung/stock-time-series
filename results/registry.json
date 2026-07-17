@@ -21,11 +21,11 @@
     "HPG__70_30": {
       "ticker": "HPG",
       "split": "70_30",
-      "model": "Linear Regression",
-      "rmse": 0.36,
+      "model": "ARIMA",
+      "rmse": 0.37,
       "mae": 0.25,
-      "since": "2026-07-14T10:38:56",
-      "directional_accuracy_pct": 54.86
+      "since": "2026-07-17T10:39:59",
+      "directional_accuracy_pct": 49.91
     },
     "HPG__80_20": {
       "ticker": "HPG",
@@ -75,11 +75,11 @@
     "VNM__70_30": {
       "ticker": "VNM",
       "split": "70_30",
-      "model": "Linear Regression",
-      "rmse": 0.9,
-      "mae": 0.61,
-      "since": "2026-07-15T10:51:00",
-      "directional_accuracy_pct": 51.65
+      "model": "ARIMA",
+      "rmse": 0.91,
+      "mae": 0.6,
+      "since": "2026-07-17T10:39:59",
+      "directional_accuracy_pct": 54.41
     },
     "VNM__80_20": {
       "ticker": "VNM",
@@ -1117,7 +1117,27 @@
       "to_model": "Linear Regression",
       "rmse_change_pct": -1.1,
       "rmse_improvement": 0.01
+    },
+    {
+      "timestamp": "2026-07-17T10:39:59",
+      "ticker": "HPG",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "Linear Regression",
+      "to_model": "ARIMA",
+      "rmse_change_pct": 2.78,
+      "rmse_improvement": -0.01
+    },
+    {
+      "timestamp": "2026-07-17T10:39:59",
+      "ticker": "VNM",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "Linear Regression",
+      "to_model": "ARIMA",
+      "rmse_change_pct": 1.11,
+      "rmse_improvement": -0.01
     }
   ],
-  "updated_at": "2026-07-16T10:58:24"
+  "updated_at": "2026-07-17T10:39:59"
 }
