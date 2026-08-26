@@ -48,11 +48,11 @@
     "VCB__80_20": {
       "ticker": "VCB",
       "split": "80_20",
-      "model": "SVR",
-      "rmse": 1.07,
+      "model": "GRU",
+      "rmse": 1.08,
       "mae": 0.68,
-      "since": "2026-08-21T09:34:21",
-      "directional_accuracy_pct": 52.26
+      "since": "2026-08-26T09:39:10",
+      "directional_accuracy_pct": 51.98
     },
     "VIC__70_30": {
       "ticker": "VIC",
@@ -75,11 +75,11 @@
     "VNM__70_30": {
       "ticker": "VNM",
       "split": "70_30",
-      "model": "Linear Regression",
-      "rmse": 0.92,
-      "mae": 0.62,
-      "since": "2026-08-25T09:33:37",
-      "directional_accuracy_pct": 55.13
+      "model": "GRU",
+      "rmse": 0.93,
+      "mae": 0.61,
+      "since": "2026-08-26T09:39:10",
+      "directional_accuracy_pct": 54.31
     },
     "VNM__80_20": {
       "ticker": "VNM",
@@ -1857,7 +1857,27 @@
       "to_model": "Linear Regression",
       "rmse_change_pct": -0.96,
       "rmse_improvement": 0.01
+    },
+    {
+      "timestamp": "2026-08-26T09:39:10",
+      "ticker": "VCB",
+      "split": "80_20",
+      "event": "promote",
+      "from_model": "SVR",
+      "to_model": "GRU",
+      "rmse_change_pct": 0.93,
+      "rmse_improvement": -0.01
+    },
+    {
+      "timestamp": "2026-08-26T09:39:10",
+      "ticker": "VNM",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "Linear Regression",
+      "to_model": "GRU",
+      "rmse_change_pct": 1.09,
+      "rmse_improvement": -0.01
     }
   ],
-  "updated_at": "2026-08-25T09:33:37"
+  "updated_at": "2026-08-26T09:39:10"
 }
