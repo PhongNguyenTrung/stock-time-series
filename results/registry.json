@@ -76,19 +76,19 @@
       "ticker": "VNM",
       "split": "70_30",
       "model": "ARIMA",
-      "rmse": 0.92,
-      "mae": 0.61,
+      "rmse": 0.93,
+      "mae": 0.62,
       "since": "2026-08-28T20:42:24",
-      "directional_accuracy_pct": 54.76
+      "directional_accuracy_pct": 54.68
     },
     "VNM__80_20": {
       "ticker": "VNM",
       "split": "80_20",
       "model": "ARIMA",
-      "rmse": 1.03,
+      "rmse": 1.04,
       "mae": 0.7,
       "since": "2026-08-28T20:42:24",
-      "directional_accuracy_pct": 55.16
+      "directional_accuracy_pct": 54.77
     }
   },
   "history": [
@@ -2067,7 +2067,27 @@
       "rmse": 4.31,
       "previous_rmse": 4.24,
       "rmse_change_pct": 1.65
+    },
+    {
+      "timestamp": "2026-09-07T14:41:01",
+      "ticker": "VNM",
+      "split": "70_30",
+      "event": "retrain",
+      "model": "ARIMA",
+      "rmse": 0.93,
+      "previous_rmse": 0.92,
+      "rmse_change_pct": 1.09
+    },
+    {
+      "timestamp": "2026-09-07T14:41:01",
+      "ticker": "VNM",
+      "split": "80_20",
+      "event": "retrain",
+      "model": "ARIMA",
+      "rmse": 1.04,
+      "previous_rmse": 1.03,
+      "rmse_change_pct": 0.97
     }
   ],
-  "updated_at": "2026-09-06T13:59:59"
+  "updated_at": "2026-09-07T14:41:01"
 }
