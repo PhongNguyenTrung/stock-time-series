@@ -75,11 +75,11 @@
     "VNM__70_30": {
       "ticker": "VNM",
       "split": "70_30",
-      "model": "ARIMA",
-      "rmse": 0.93,
+      "model": "Linear Regression",
+      "rmse": 0.92,
       "mae": 0.62,
-      "since": "2026-08-28T20:42:24",
-      "directional_accuracy_pct": 54.68
+      "since": "2026-09-10T13:21:24",
+      "directional_accuracy_pct": 54.31
     },
     "VNM__80_20": {
       "ticker": "VNM",
@@ -2087,7 +2087,17 @@
       "rmse": 1.04,
       "previous_rmse": 1.03,
       "rmse_change_pct": 0.97
+    },
+    {
+      "timestamp": "2026-09-10T13:21:24",
+      "ticker": "VNM",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "ARIMA",
+      "to_model": "Linear Regression",
+      "rmse_change_pct": -1.08,
+      "rmse_improvement": 0.01
     }
   ],
-  "updated_at": "2026-09-09T13:23:23"
+  "updated_at": "2026-09-10T13:21:24"
 }
