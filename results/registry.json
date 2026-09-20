@@ -12,11 +12,11 @@
     "FPT__80_20": {
       "ticker": "FPT",
       "split": "80_20",
-      "model": "GRU",
-      "rmse": 1.84,
+      "model": "ARIMA",
+      "rmse": 1.85,
       "mae": 1.35,
-      "since": "2026-09-06T13:59:59",
-      "directional_accuracy_pct": 46.44
+      "since": "2026-09-20T14:32:11",
+      "directional_accuracy_pct": 54.62
     },
     "HPG__70_30": {
       "ticker": "HPG",
@@ -57,20 +57,20 @@
     "VIC__70_30": {
       "ticker": "VIC",
       "split": "70_30",
-      "model": "LSTM",
-      "rmse": 3.57,
-      "mae": 1.97,
-      "since": "2026-09-13T14:51:37",
-      "directional_accuracy_pct": 52.71
+      "model": "GRU",
+      "rmse": 3.56,
+      "mae": 1.96,
+      "since": "2026-09-20T14:32:11",
+      "directional_accuracy_pct": 55.53
     },
     "VIC__80_20": {
       "ticker": "VIC",
       "split": "80_20",
-      "model": "LSTM",
+      "model": "GRU",
       "rmse": 4.36,
-      "mae": 2.88,
-      "since": "2026-09-13T14:51:37",
-      "directional_accuracy_pct": 58.36
+      "mae": 2.87,
+      "since": "2026-09-20T14:32:11",
+      "directional_accuracy_pct": 60.4
     },
     "VNM__70_30": {
       "ticker": "VNM",
@@ -2167,7 +2167,37 @@
       "rmse": 0.93,
       "previous_rmse": 0.92,
       "rmse_change_pct": 1.09
+    },
+    {
+      "timestamp": "2026-09-20T14:32:11",
+      "ticker": "FPT",
+      "split": "80_20",
+      "event": "promote",
+      "from_model": "GRU",
+      "to_model": "ARIMA",
+      "rmse_change_pct": 0.54,
+      "rmse_improvement": -0.01
+    },
+    {
+      "timestamp": "2026-09-20T14:32:11",
+      "ticker": "VIC",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "LSTM",
+      "to_model": "GRU",
+      "rmse_change_pct": -0.28,
+      "rmse_improvement": 0.01
+    },
+    {
+      "timestamp": "2026-09-20T14:32:11",
+      "ticker": "VIC",
+      "split": "80_20",
+      "event": "promote",
+      "from_model": "LSTM",
+      "to_model": "GRU",
+      "rmse_change_pct": 0.0,
+      "rmse_improvement": 0.0
     }
   ],
-  "updated_at": "2026-09-18T13:27:27"
+  "updated_at": "2026-09-20T14:32:11"
 }
