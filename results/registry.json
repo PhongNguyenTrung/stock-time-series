@@ -4,19 +4,19 @@
       "ticker": "FPT",
       "split": "70_30",
       "model": "ARIMA",
-      "rmse": 1.79,
-      "mae": 1.32,
+      "rmse": 1.63,
+      "mae": 1.2,
       "since": "2026-09-17T14:05:15",
-      "directional_accuracy_pct": 55.26
+      "directional_accuracy_pct": 55.09
     },
     "FPT__80_20": {
       "ticker": "FPT",
       "split": "80_20",
       "model": "ARIMA",
-      "rmse": 1.85,
-      "mae": 1.35,
+      "rmse": 1.68,
+      "mae": 1.22,
       "since": "2026-09-20T14:32:11",
-      "directional_accuracy_pct": 54.62
+      "directional_accuracy_pct": 54.35
     },
     "HPG__70_30": {
       "ticker": "HPG",
@@ -2197,7 +2197,27 @@
       "to_model": "GRU",
       "rmse_change_pct": 0.0,
       "rmse_improvement": 0.0
+    },
+    {
+      "timestamp": "2026-09-21T15:42:10",
+      "ticker": "FPT",
+      "split": "70_30",
+      "event": "retrain",
+      "model": "ARIMA",
+      "rmse": 1.63,
+      "previous_rmse": 1.79,
+      "rmse_change_pct": -8.94
+    },
+    {
+      "timestamp": "2026-09-21T15:42:10",
+      "ticker": "FPT",
+      "split": "80_20",
+      "event": "retrain",
+      "model": "ARIMA",
+      "rmse": 1.68,
+      "previous_rmse": 1.85,
+      "rmse_change_pct": -9.19
     }
   ],
-  "updated_at": "2026-09-20T14:32:11"
+  "updated_at": "2026-09-21T15:42:10"
 }
