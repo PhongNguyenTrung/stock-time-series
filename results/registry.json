@@ -12,11 +12,11 @@
     "FPT__80_20": {
       "ticker": "FPT",
       "split": "80_20",
-      "model": "ARIMA",
-      "rmse": 1.68,
+      "model": "SVR",
+      "rmse": 1.67,
       "mae": 1.22,
-      "since": "2026-09-20T14:32:11",
-      "directional_accuracy_pct": 54.35
+      "since": "2026-10-01T15:57:59",
+      "directional_accuracy_pct": 44.33
     },
     "HPG__70_30": {
       "ticker": "HPG",
@@ -2227,7 +2227,17 @@
       "to_model": "SVR",
       "rmse_change_pct": -0.61,
       "rmse_improvement": 0.01
+    },
+    {
+      "timestamp": "2026-10-01T15:57:59",
+      "ticker": "FPT",
+      "split": "80_20",
+      "event": "promote",
+      "from_model": "ARIMA",
+      "to_model": "SVR",
+      "rmse_change_pct": -0.6,
+      "rmse_improvement": 0.01
     }
   ],
-  "updated_at": "2026-09-30T15:37:16"
+  "updated_at": "2026-10-01T15:57:59"
 }
