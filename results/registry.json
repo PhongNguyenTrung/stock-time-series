@@ -48,11 +48,11 @@
     "VCB__80_20": {
       "ticker": "VCB",
       "split": "80_20",
-      "model": "GRU",
-      "rmse": 1.08,
+      "model": "SVR",
+      "rmse": 1.07,
       "mae": 0.68,
-      "since": "2026-09-04T13:19:20",
-      "directional_accuracy_pct": 51.84
+      "since": "2026-10-06T15:42:38",
+      "directional_accuracy_pct": 52.94
     },
     "VIC__70_30": {
       "ticker": "VIC",
@@ -2267,7 +2267,17 @@
       "to_model": "ARIMA",
       "rmse_change_pct": 1.61,
       "rmse_improvement": -0.07
+    },
+    {
+      "timestamp": "2026-10-06T15:42:38",
+      "ticker": "VCB",
+      "split": "80_20",
+      "event": "promote",
+      "from_model": "GRU",
+      "to_model": "SVR",
+      "rmse_change_pct": -0.93,
+      "rmse_improvement": 0.01
     }
   ],
-  "updated_at": "2026-10-05T17:41:22"
+  "updated_at": "2026-10-06T15:42:38"
 }
