@@ -12,11 +12,11 @@
     "FPT__80_20": {
       "ticker": "FPT",
       "split": "80_20",
-      "model": "GRU",
-      "rmse": 1.67,
-      "mae": 1.22,
-      "since": "2026-10-04T15:44:52",
-      "directional_accuracy_pct": 44.33
+      "model": "Linear Regression",
+      "rmse": 1.64,
+      "mae": 1.2,
+      "since": "2026-10-07T16:02:54",
+      "directional_accuracy_pct": 51.98
     },
     "HPG__70_30": {
       "ticker": "HPG",
@@ -2277,7 +2277,17 @@
       "to_model": "SVR",
       "rmse_change_pct": -0.93,
       "rmse_improvement": 0.01
+    },
+    {
+      "timestamp": "2026-10-07T16:02:54",
+      "ticker": "FPT",
+      "split": "80_20",
+      "event": "promote",
+      "from_model": "GRU",
+      "to_model": "Linear Regression",
+      "rmse_change_pct": -1.8,
+      "rmse_improvement": 0.03
     }
   ],
-  "updated_at": "2026-10-06T15:42:38"
+  "updated_at": "2026-10-07T16:02:54"
 }
