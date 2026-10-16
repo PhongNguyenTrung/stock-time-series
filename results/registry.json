@@ -13,10 +13,10 @@
       "ticker": "FPT",
       "split": "80_20",
       "model": "Linear Regression",
-      "rmse": 1.62,
+      "rmse": 1.61,
       "mae": 1.18,
       "since": "2026-10-07T16:02:54",
-      "directional_accuracy_pct": 54.35
+      "directional_accuracy_pct": 53.83
     },
     "HPG__70_30": {
       "ticker": "HPG",
@@ -2397,7 +2397,17 @@
       "to_model": "SVR",
       "rmse_change_pct": -0.62,
       "rmse_improvement": 0.01
+    },
+    {
+      "timestamp": "2026-10-16T13:46:36",
+      "ticker": "FPT",
+      "split": "80_20",
+      "event": "retrain",
+      "model": "Linear Regression",
+      "rmse": 1.61,
+      "previous_rmse": 1.62,
+      "rmse_change_pct": -0.62
     }
   ],
-  "updated_at": "2026-10-15T13:56:20"
+  "updated_at": "2026-10-16T13:46:36"
 }
