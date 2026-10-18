@@ -3,11 +3,11 @@
     "FPT__70_30": {
       "ticker": "FPT",
       "split": "70_30",
-      "model": "SVR",
+      "model": "GRU",
       "rmse": 1.61,
-      "mae": 1.18,
-      "since": "2026-10-15T13:56:20",
-      "directional_accuracy_pct": 46.57
+      "mae": 1.19,
+      "since": "2026-10-18T14:21:01",
+      "directional_accuracy_pct": 46.75
     },
     "FPT__80_20": {
       "ticker": "FPT",
@@ -58,19 +58,19 @@
       "ticker": "VIC",
       "split": "70_30",
       "model": "GRU",
-      "rmse": 3.65,
-      "mae": 2.07,
+      "rmse": 3.68,
+      "mae": 2.1,
       "since": "2026-10-13T16:46:42",
-      "directional_accuracy_pct": 58.45
+      "directional_accuracy_pct": 55.34
     },
     "VIC__80_20": {
       "ticker": "VIC",
       "split": "80_20",
-      "model": "GRU",
-      "rmse": 4.46,
-      "mae": 3.03,
-      "since": "2026-10-13T16:46:42",
-      "directional_accuracy_pct": 58.97
+      "model": "LSTM",
+      "rmse": 4.48,
+      "mae": 3.08,
+      "since": "2026-10-18T14:21:01",
+      "directional_accuracy_pct": 55.27
     },
     "VNM__70_30": {
       "ticker": "VNM",
@@ -2407,7 +2407,37 @@
       "rmse": 1.61,
       "previous_rmse": 1.62,
       "rmse_change_pct": -0.62
+    },
+    {
+      "timestamp": "2026-10-18T14:21:01",
+      "ticker": "FPT",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "SVR",
+      "to_model": "GRU",
+      "rmse_change_pct": 0.0,
+      "rmse_improvement": 0.0
+    },
+    {
+      "timestamp": "2026-10-18T14:21:01",
+      "ticker": "VIC",
+      "split": "70_30",
+      "event": "retrain",
+      "model": "GRU",
+      "rmse": 3.68,
+      "previous_rmse": 3.65,
+      "rmse_change_pct": 0.82
+    },
+    {
+      "timestamp": "2026-10-18T14:21:01",
+      "ticker": "VIC",
+      "split": "80_20",
+      "event": "promote",
+      "from_model": "GRU",
+      "to_model": "LSTM",
+      "rmse_change_pct": 0.45,
+      "rmse_improvement": -0.02
     }
   ],
-  "updated_at": "2026-10-16T13:46:36"
+  "updated_at": "2026-10-18T14:21:01"
 }
