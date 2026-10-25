@@ -58,19 +58,19 @@
       "ticker": "VIC",
       "split": "70_30",
       "model": "GRU",
-      "rmse": 3.68,
-      "mae": 2.1,
+      "rmse": 3.75,
+      "mae": 2.15,
       "since": "2026-10-13T16:46:42",
-      "directional_accuracy_pct": 55.34
+      "directional_accuracy_pct": 56.4
     },
     "VIC__80_20": {
       "ticker": "VIC",
       "split": "80_20",
-      "model": "LSTM",
-      "rmse": 4.48,
-      "mae": 3.08,
-      "since": "2026-10-18T14:21:01",
-      "directional_accuracy_pct": 55.27
+      "model": "GRU",
+      "rmse": 4.58,
+      "mae": 3.15,
+      "since": "2026-10-25T14:49:59",
+      "directional_accuracy_pct": 58.24
     },
     "VNM__70_30": {
       "ticker": "VNM",
@@ -2477,7 +2477,27 @@
       "to_model": "ARIMA",
       "rmse_change_pct": 0.0,
       "rmse_improvement": 0.0
+    },
+    {
+      "timestamp": "2026-10-25T14:49:59",
+      "ticker": "VIC",
+      "split": "70_30",
+      "event": "retrain",
+      "model": "GRU",
+      "rmse": 3.75,
+      "previous_rmse": 3.68,
+      "rmse_change_pct": 1.9
+    },
+    {
+      "timestamp": "2026-10-25T14:49:59",
+      "ticker": "VIC",
+      "split": "80_20",
+      "event": "promote",
+      "from_model": "LSTM",
+      "to_model": "GRU",
+      "rmse_change_pct": 2.23,
+      "rmse_improvement": -0.1
     }
   ],
-  "updated_at": "2026-10-23T14:04:25"
+  "updated_at": "2026-10-25T14:49:59"
 }
