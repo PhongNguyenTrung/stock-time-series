@@ -1,11 +1,11 @@
 Ticker,Split,Model,RMSE,MAE,MAPE (%),R²,Directional Accuracy (%)
-FPT,70_30,Linear Regression,1.69,1.25,1.483,0.9892,51.68
-HPG,70_30,Linear Regression,0.37,0.26,1.17,0.9728,53.92
-VCB,70_30,Linear Regression,0.93,0.6,0.981,0.9183,51.7
-VIC,70_30,Linear Regression,3.93,2.3,2.018,0.9976,47.29
-VNM,70_30,Linear Regression,0.92,0.62,1.066,0.944,55.7
-FPT,80_20,Linear Regression,1.56,1.14,1.446,0.9846,55.44
-HPG,80_20,Linear Regression,0.41,0.29,1.268,0.9618,53.28
-VCB,80_20,Linear Regression,1.05,0.68,1.111,0.9202,51.41
-VIC,80_20,Linear Regression,4.8,3.34,2.548,0.9953,46.02
-VNM,80_20,Linear Regression,1.02,0.71,1.219,0.9418,55.46
+FPT,70_30,Linear Regression,1.71,1.28,1.517,0.989,50.97
+HPG,70_30,Linear Regression,0.37,0.26,1.173,0.9728,53.92
+VCB,70_30,Linear Regression,0.93,0.6,0.981,0.9182,52.27
+VIC,70_30,Linear Regression,3.94,2.3,2.019,0.9976,46.9
+VNM,70_30,Linear Regression,0.92,0.62,1.066,0.944,55.51
+FPT,80_20,Linear Regression,1.56,1.12,1.431,0.9848,59.15
+HPG,80_20,Linear Regression,0.41,0.29,1.257,0.9616,52.19
+VCB,80_20,Linear Regression,1.12,0.7,1.138,0.9097,51.98
+VIC,80_20,Linear Regression,4.81,3.35,2.544,0.9953,45.3
+VNM,80_20,Linear Regression,1.01,0.71,1.203,0.9427,56.28
