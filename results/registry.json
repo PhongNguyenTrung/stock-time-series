@@ -3,20 +3,20 @@
     "FPT__70_30": {
       "ticker": "FPT",
       "split": "70_30",
-      "model": "ARIMA",
-      "rmse": 1.6,
-      "mae": 1.17,
-      "since": "2026-10-23T14:04:25",
-      "directional_accuracy_pct": 54.5
+      "model": "SVR",
+      "rmse": 1.59,
+      "mae": 1.16,
+      "since": "2026-10-30T15:34:53",
+      "directional_accuracy_pct": 46.11
     },
     "FPT__80_20": {
       "ticker": "FPT",
       "split": "80_20",
       "model": "Linear Regression",
-      "rmse": 1.56,
-      "mae": 1.14,
+      "rmse": 1.55,
+      "mae": 1.12,
       "since": "2026-10-07T16:02:54",
-      "directional_accuracy_pct": 56.23
+      "directional_accuracy_pct": 58.51
     },
     "HPG__70_30": {
       "ticker": "HPG",
@@ -49,8 +49,8 @@
       "ticker": "VCB",
       "split": "80_20",
       "model": "SVR",
-      "rmse": 1.03,
-      "mae": 0.66,
+      "rmse": 1.02,
+      "mae": 0.65,
       "since": "2026-10-29T15:53:00",
       "directional_accuracy_pct": 52.54
     },
@@ -85,10 +85,10 @@
       "ticker": "VNM",
       "split": "80_20",
       "model": "Linear Regression",
-      "rmse": 1.01,
-      "mae": 0.71,
+      "rmse": 0.99,
+      "mae": 0.7,
       "since": "2026-10-27T15:09:55",
-      "directional_accuracy_pct": 56.28
+      "directional_accuracy_pct": 57.65
     }
   },
   "history": [
@@ -2557,7 +2557,47 @@
       "rmse": 1.01,
       "previous_rmse": 1.02,
       "rmse_change_pct": -0.98
+    },
+    {
+      "timestamp": "2026-10-30T15:34:53",
+      "ticker": "FPT",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "ARIMA",
+      "to_model": "SVR",
+      "rmse_change_pct": -0.63,
+      "rmse_improvement": 0.01
+    },
+    {
+      "timestamp": "2026-10-30T15:34:53",
+      "ticker": "FPT",
+      "split": "80_20",
+      "event": "retrain",
+      "model": "Linear Regression",
+      "rmse": 1.55,
+      "previous_rmse": 1.56,
+      "rmse_change_pct": -0.64
+    },
+    {
+      "timestamp": "2026-10-30T15:34:53",
+      "ticker": "VCB",
+      "split": "80_20",
+      "event": "retrain",
+      "model": "SVR",
+      "rmse": 1.02,
+      "previous_rmse": 1.03,
+      "rmse_change_pct": -0.97
+    },
+    {
+      "timestamp": "2026-10-30T15:34:53",
+      "ticker": "VNM",
+      "split": "80_20",
+      "event": "retrain",
+      "model": "Linear Regression",
+      "rmse": 0.99,
+      "previous_rmse": 1.01,
+      "rmse_change_pct": -1.98
     }
   ],
-  "updated_at": "2026-10-29T15:53:00"
+  "updated_at": "2026-10-30T15:34:53"
 }
