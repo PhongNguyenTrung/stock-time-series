@@ -3,20 +3,20 @@
     "FPT__70_30": {
       "ticker": "FPT",
       "split": "70_30",
-      "model": "SVR",
-      "rmse": 1.59,
-      "mae": 1.16,
-      "since": "2026-10-30T15:34:53",
-      "directional_accuracy_pct": 46.11
+      "model": "ARIMA",
+      "rmse": 1.6,
+      "mae": 1.17,
+      "since": "2026-11-02T19:05:40",
+      "directional_accuracy_pct": 54.5
     },
     "FPT__80_20": {
       "ticker": "FPT",
       "split": "80_20",
       "model": "Linear Regression",
-      "rmse": 1.55,
-      "mae": 1.12,
+      "rmse": 1.52,
+      "mae": 1.11,
       "since": "2026-10-07T16:02:54",
-      "directional_accuracy_pct": 58.51
+      "directional_accuracy_pct": 56.65
     },
     "HPG__70_30": {
       "ticker": "HPG",
@@ -30,11 +30,11 @@
     "HPG__80_20": {
       "ticker": "HPG",
       "split": "80_20",
-      "model": "GRU",
-      "rmse": 0.41,
-      "mae": 0.29,
-      "since": "2026-11-01T17:05:30",
-      "directional_accuracy_pct": 47.27
+      "model": "Linear Regression",
+      "rmse": 0.4,
+      "mae": 0.28,
+      "since": "2026-11-02T19:05:40",
+      "directional_accuracy_pct": 52.46
     },
     "VCB__70_30": {
       "ticker": "VCB",
@@ -49,10 +49,10 @@
       "ticker": "VCB",
       "split": "80_20",
       "model": "SVR",
-      "rmse": 1.02,
+      "rmse": 1.01,
       "mae": 0.65,
       "since": "2026-10-29T15:53:00",
-      "directional_accuracy_pct": 52.54
+      "directional_accuracy_pct": 52.82
     },
     "VIC__70_30": {
       "ticker": "VIC",
@@ -2617,7 +2617,47 @@
       "to_model": "LSTM",
       "rmse_change_pct": 0.27,
       "rmse_improvement": -0.01
+    },
+    {
+      "timestamp": "2026-11-02T19:05:40",
+      "ticker": "FPT",
+      "split": "70_30",
+      "event": "promote",
+      "from_model": "SVR",
+      "to_model": "ARIMA",
+      "rmse_change_pct": 0.63,
+      "rmse_improvement": -0.01
+    },
+    {
+      "timestamp": "2026-11-02T19:05:40",
+      "ticker": "FPT",
+      "split": "80_20",
+      "event": "retrain",
+      "model": "Linear Regression",
+      "rmse": 1.52,
+      "previous_rmse": 1.55,
+      "rmse_change_pct": -1.94
+    },
+    {
+      "timestamp": "2026-11-02T19:05:40",
+      "ticker": "HPG",
+      "split": "80_20",
+      "event": "promote",
+      "from_model": "GRU",
+      "to_model": "Linear Regression",
+      "rmse_change_pct": -2.44,
+      "rmse_improvement": 0.01
+    },
+    {
+      "timestamp": "2026-11-02T19:05:40",
+      "ticker": "VCB",
+      "split": "80_20",
+      "event": "retrain",
+      "model": "SVR",
+      "rmse": 1.01,
+      "previous_rmse": 1.02,
+      "rmse_change_pct": -0.98
     }
   ],
-  "updated_at": "2026-11-01T17:05:30"
+  "updated_at": "2026-11-02T19:05:40"
 }
