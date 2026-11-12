@@ -16,8 +16,9 @@ on:
         default: false
         type: boolean
 
-  schedule:
-    - cron: "0 11 * * 0"   # Chủ Nhật 11:00 UTC = 18:00 CH giờ VN
+  # Tạm thời tắt cron job (vnstock v3/v4/v5 ngừng hoạt động từ 10/11/2026)
+  # schedule:
+  #   - cron: "0 11 * * 0"   # Chủ Nhật 11:00 UTC = 18:00 CH giờ VN
 
 permissions:
   # Cần để auto-commit docs/data/ + results/ trở lại main → trigger pages.yml.
